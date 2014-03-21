@@ -1,0 +1,34 @@
+﻿using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+public abstract class Group : MonoBehaviour {
+  protected ICollection<Card> group;
+
+	public virtual void Start () {
+	}
+	
+	public virtual void Update () {
+	}
+
+  public void Add(Card c) {
+    group.Add(c);
+  }
+
+  public void Remove(Card c) {
+    group.Remove(c);
+  }
+
+  public void ShuffleInto(Group g) {
+    foreach (Card card in group) {
+      g.Add(card);
+    }
+    group.Clear();
+  }
+
+  public static void MoveCard(Card c, Group from, Group to) {
+    from.Remove(c);
+    to.Add(c);
+  }
+}

@@ -1,0 +1,16 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class Hand : Group {
+	public override void Start () {
+	  group = new List<Card>();
+	}
+	
+	public override void Update () {
+	}
+
+  public void PlayCard(int idx, Group g) {
+    Group.MoveCard(group[idx], this, g);
+  }
+}

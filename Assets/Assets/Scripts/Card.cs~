@@ -1,0 +1,51 @@
+﻿public enum Suit {
+  Hearts, Clubs, Diamonds, Spades
+};
+
+public enum Rank {
+  Ace = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
+};
+
+public class Card {
+  private const int minRank = 1;
+  private const int maxRank = 13;
+
+  public Rank rank;
+  public Suit suit;
+
+  public Card (int cardValue) {
+    rank = (Rank) (cardValue % maxRank + 1);
+    suit = (Suit) (cardValue / maxRank);
+  }
+
+  public Card (Rank rank, Suit suit) {
+    this.rank = rank;
+    this.suit = suit;
+  }
+  
+  public Card (int rank, Suit suit) {
+    System.Diagnostics.Debug.Assert(minRank <= rank && rank <= maxRank);
+    this.rank = (Rank) rank;
+    this.suit = suit;
+  }
+
+  public int CardValue() {
+    return ((int) rank - 1) + ((int) suit * maxRank);
+  }
+
+  public override string ToString() {
+    string output;
+    if (rank == Rank.Ace)        output = "A";
+    else if (rank == Rank.Jack)  output = "J";
+    else if (rank == Rank.Queen) output = "Q";
+    else if (rank == Rank.King)  output = "K";
+    else                         output = ((int) rank).ToString();
+
+    if (suit == Suit.Hearts)        output += "\u2665";
+    else if (suit == Suit.Clubs)    output += "\u2663";
+    else if (suit == Suit.Diamonds) output += "\u2666";
+    else if (suit == Suit.Spades)   output += "\u2660";
+
+    return output;
+  }
+}

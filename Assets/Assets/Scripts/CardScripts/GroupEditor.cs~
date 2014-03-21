@@ -1,0 +1,12 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEditor;
+
+[CustomEditor(typeof(Deck))]
+public class GroupEditor : Editor {
+  public override void OnInspectorGUI(){
+    base.OnInspectorGUI();
+    //EditorGUILayout.IntField("asdasd", 0);
+  }
+}

@@ -1,0 +1,26 @@
+﻿using UnityEngine;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+
+public class Pile : MonoBehaviour {
+  protected ICollection<Card> pile;
+
+	public virtual void Start () {
+    pile = new ICollection<Card>();
+	}
+	
+	public virtual void Update () {
+	}
+
+  public void Add(Card c) {
+    pile.Add(c);
+  }
+
+  public void ShuffleInto(Deck d) {
+    foreach (Card c in pile) {
+      d.Add(c);
+    }
+    pile.Clear();
+  }
+}

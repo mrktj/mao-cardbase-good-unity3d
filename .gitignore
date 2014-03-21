@@ -9,22 +9,22 @@ Library/
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
- ExportedObj/
- *.svd
- *.userprefs
- *.csproj
- *.pidb
- *.suo
- *.sln
- *.user
- *.unityproj
- *.booproj
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
   
 # ============ #
 # OS generated #
 # ============ #
-  *.exe
-  *_Data/
-  *~
-  *.swp
-  *.swo
+*.exe
+*_Data/
+*~
+*.swp
+*.swo

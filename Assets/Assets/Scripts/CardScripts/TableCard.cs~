@@ -1,0 +1,18 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class DisplayCard : MonoBehaviour {
+  private Card _card;
+  public Card card { get { return card;} }
+
+	void Start () {
+	}
+	
+	void Update () {
+	}
+
+  public void Init(Card c) {
+    _card = c;
+  }
+
+}

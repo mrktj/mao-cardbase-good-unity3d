@@ -1,0 +1,53 @@
+﻿using System.Collections;
+
+public struct Rank {
+  private static int maxRank = 13;  
+  private static int minRank = 13;  
+  private static int Ace = 1;
+  private static int Jack = 11;
+  private static int Queen = 12;
+  private static int King = 13;
+  
+  private readonly int value;
+
+  private Rank(int value) {
+    if (minRank < value && value < maxRank) {
+      this.value = value;
+    }
+    else {
+      this.value = value % 13 + 1;
+    }
+  }
+
+  public int Value { get { return value; } }
+
+  public static implicit operator Rank(int i) {
+    return new Rank(i);
+  }
+
+  public static implicit operator int(Rank r) {
+    return r.Value; 
+  }
+
+  public static bool operator <(Rank x, Rank y) {
+    if (x.Value == Ace) return false; 
+    if (y.Value == Ace && x.Value != Ace) return true; 
+    else return x.Value < y.Value; 
+  }
+
+  public static bool operator >(Rank x, Rank y) {
+    if (y.Value == Ace) return false; 
+    if (x.Value == Ace && y.Value != Ace) return true; 
+    else return x.Value > y.Value; 
+  }
+
+  public static bool 
+
+  public override string ToString() {
+    if (value == Ace)         return "A";
+    else if (value == Jack)   return "Jack";
+    else if (value == Queen)  return "Queen";
+    else if (value == King)   return "King";
+    else                      return value.ToString();
+  }
+}

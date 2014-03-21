@@ -1,0 +1,24 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+
+public class Deck : Group {
+  private const int numGroup = 52;
+
+  public override void Start() {
+    group = new HashSet<Card>();
+    for (int i = 0; i < numGroup; i++) {
+      group.Add(new Card(i));
+    }
+  }
+
+	public override void Update () {
+	}
+
+  public void DealTo(Group g) {
+    Random random = new Random();
+    Card randomCard = group.ElementAt(random.Next(group.Count)); 
+    Group.MoveCard(randomCard, this, g);
+  }
+
+}

@@ -1,0 +1,23 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class HandSlot : MonoBehaviour {
+  public int idx;
+  public Hand hand;
+  private SpriteRenderer spriteRenderer;
+
+	void Start () {
+    spriteRenderer = (SpriteRenderer) this.gameObject.renderer;
+	}
+
+  void Update() {
+  }
+	
+	public void UpdateSprite (Sprite s) {
+    spriteRenderer.sprite = s;
+	}
+
+  public void PlayCard(Group g) { 
+    hand.PlayCard(idx + hand.leftIndex, g);
+  }
+}

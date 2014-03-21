@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+using System.Collections;
+
+public class HandCard : MonoBehaviour {
+  private SpriteRenderer spriteRenderer;
+
+  void Start () {
+    spriteRenderer = (SpriteRenderer) this.gameObject.renderer;
+	}
+	
+	void Update () {
+	}
+  }
+}
