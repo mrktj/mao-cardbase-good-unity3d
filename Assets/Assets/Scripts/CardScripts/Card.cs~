@@ -1,93 +1,66 @@
 ﻿using UnityEngine;
 using System;
-
-public enum Suit {
-  Hearts, Clubs, Diamonds, Spades
-};
-
-public enum Rank {
-  Ace = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
-};
+using System.Collections.Generic;
 
 [Serializable]
 public class Card {
-  private const int minRank = 1;
-  private const int maxRank = 13;
+  [SerializeField]
+  private int _buyCost;
+  [SerializeField]
+  private int _useCost;
+  [SerializeField]
+  private int _cardValue;
+  [SerializeField]
+  private string _name;
+  [SerializeField]
+  private string _text;
+  [SerializeField]
+  private List<CardEffect> _effects;
 
-  private Rank _rank;
-  private Suit _suit;
+  public int buyCost { get { return _buyCost; }}
+  public int useCost { get { return _useCost; }}
+  public int cardValue { get { return _cardValue; }}
+  public string name { get { return _name; }}
+  public string text { get { return _text; }}
+  public List<CardEffect> effects { get { return _effects;}}
 
-  public Rank rank { get { return _rank; }}
-  public Suit suit { get { return _suit; }}
-  public int cardValue { get { return ((int) rank - 1) + ((int) suit * maxRank); } }
-
-
-  public Card (int cardValue) {
-    _rank = (Rank) (cardValue % maxRank + 1);
-    _suit = (Suit) (cardValue / maxRank);
+  public Card(int val) : this(CardSet.GetCard(val)){
   }
 
-  public Card (Rank rank, Suit suit) {
-    this._rank = rank;
-    this._suit = suit;
-  }
-  
-  public Card (int rank, Suit suit) {
-    System.Diagnostics.Debug.Assert(minRank <= rank && rank <= maxRank);
-    this._rank = (Rank) rank;
-    this._suit = suit;
+  public Card(Card card) {
+    _buyCost = card.buyCost;
+    _useCost = card.useCost;
+    _name = card.name;
+    _text = card.text;
+    _cardValue = card.cardValue;
+    _effects = card.effects;
   }
 
+  public Card () {
+    _buyCost = 0;
+    _useCost = 0;
+    _cardValue = 0;
+    _name = "";
+    _text = "";
+    _effects = new List<CardEffect>();
+  }
+
+  public Card(string name, string text, int buy, int use, int val, CardEffect[] eff) {
+    _name = name;
+    _text = text;
+    _buyCost = buy;
+    _useCost = use;
+    _cardValue = val;
+    _effects = new List<CardEffect>(eff);
+  }
 
   public override string ToString() {
-    return RichText4();
+    return name + "(" + buyCost + "/" + useCost + ")";
   }
 
-  public string NoRichText() {
-    string output;
-    if (rank == Rank.Ace)        output = "A";
-    else if (rank == Rank.Jack)  output = "J";
-    else if (rank == Rank.Queen) output = "Q";
-    else if (rank == Rank.King)  output = "K";
-    else                         output = ((int) rank).ToString();
-
-    if (suit == Suit.Hearts)        output += "\u2665";
-    else if (suit == Suit.Clubs)    output += "\u2663";
-    else if (suit == Suit.Diamonds) output += "\u2666";
-    else if (suit == Suit.Spades)   output += "\u2660";
-
-    return output;
-  }
-
-  public string RichText2() {
-    string output;
-    if (rank == Rank.Ace)        output = "A";
-    else if (rank == Rank.Jack)  output = "J";
-    else if (rank == Rank.Queen) output = "Q";
-    else if (rank == Rank.King)  output = "K";
-    else                         output = ((int) rank).ToString();
-
-    if (suit == Suit.Hearts)        output += "<color=red>\u2665</color>";
-    else if (suit == Suit.Clubs)    output += "<color=black>\u2663</color>";
-    else if (suit == Suit.Diamonds) output += "<color=red>\u2666</color>";
-    else if (suit == Suit.Spades)   output += "<color=black>\u2660</color>";
-
-    return output;
-  }
-
-  public string RichText4() {
-    string output;
-    if (rank == Rank.Ace)        output = "A";
-    else if (rank == Rank.Jack)  output = "J";
-    else if (rank == Rank.Queen) output = "Q";
-    else if (rank == Rank.King)  output = "K";
-    else                         output = ((int) rank).ToString();
-
-    if (suit == Suit.Hearts)        output += "<color=red>\u2665</color>";
-    else if (suit == Suit.Clubs)    output += "<color=green>\u2663</color>";
-    else if (suit == Suit.Diamonds) output += "<color=blue>\u2666</color>";
-    else if (suit == Suit.Spades)   output += "<color=black>\u2660</color>";
-
-    return output;
+  public void ApplyCardEffect(Player player) {
+    foreach (CardEffect ce in effects) {
+      ce.Apply(player);
+    }
   }
 }

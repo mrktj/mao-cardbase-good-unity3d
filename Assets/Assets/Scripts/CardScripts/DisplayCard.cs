@@ -3,9 +3,10 @@ using System.Collections;
 
 [RequireComponent(typeof(SpriteRenderer))]
 public class DisplayCard : MonoBehaviour {
-  public CardSet sprites;
+  public SpriteSet sprites;
   private int _cardValue;
   public int cardValue { get { return _cardValue;} }
+  private GameObject image;
   private SpriteRenderer spriteRenderer; 
   private Sprite sprite { 
     set {
@@ -13,7 +14,7 @@ public class DisplayCard : MonoBehaviour {
     }
   }
 
-	void Start () {
+	void OnEnable () {
     spriteRenderer = (SpriteRenderer) gameObject.renderer;
     //DrawEmpty();
 	}
@@ -27,18 +28,22 @@ public class DisplayCard : MonoBehaviour {
 
   public void DrawCard(int val) {
     _cardValue = val;
-    sprite = sprites.cardSprites[val];
+    image = ImageSet.GetImage(val, this.gameObject);
+    //sprite = sprites.cardSprites[val];
   }
 
   public void DrawBack() {
     sprite = sprites.backSprite;
+    Destroy(image);
   }
 
   public void DrawEmpty() {
     sprite = sprites.emptySprite;
+    Destroy(image);
   }
 
   public void DrawOutline() {
     sprite = sprites.outlineSprite;
+    Destroy(image);
   }
 }

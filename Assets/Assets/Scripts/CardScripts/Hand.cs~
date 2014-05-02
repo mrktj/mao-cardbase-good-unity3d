@@ -3,50 +3,82 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class Hand : Group {
-  private const int handSize = 4;
+  private List<DisplayCard> _hand;
+  public List<DisplayCard> hand { get { return _hand;} } 
+  public List<int> cards { get { return (List<int>) group; } }
+  public GameObject displayCardPrefab;
+  public Player player;
+  
+  public SpriteSet sprites;
 
-  private int _leftIndex;
-  public int leftIndex { get { return _leftIndex;} }
-
-  public DisplayCard[] cards;
-  public List<Card> hand { get { return (List<Card>) group; } }
-  public bool isFull { get { return hand.Count >= handSize; } }
-
-  public NetworkPlayer player;
-
-	void Start () {
-	  _group = new List<Card>();
-    _leftIndex = 0;
+	void OnEnable () {
+	  _group = new List<int>();
+    _hand = new List<DisplayCard>();
+    Init();
 	}
 	
 	void Update () {
 	}
 
+  public bool ClearInto(Group g) {
+    networkView.RPC("NetworkClearHand", RPCMode.All);
+    ShuffleInto(g);
+    return true;
+  }
+
+  [RPC]
+  private void NetworkClearHand() {
+    foreach (DisplayCard dc in hand) {
+      UnityEngine.Object.Destroy(dc.gameObject);
+    }
+    hand.Clear();
+  }
+
+  [RPC]
+  private void NetworkDestroyDisplayCard(int idx) {
+    DisplayCard dc = hand[idx];
+    _hand.RemoveAt(idx);
+    UnityEngine.Object.Destroy(dc.gameObject);
+  } 
+
+  [RPC]
+  private void NetworkNewDisplayCard(float x, float y, int cardValue) {
+    GameObject go = Instantiate(displayCardPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+    go.layer = this.gameObject.layer;
+    go.transform.parent = this.gameObject.transform;
+    go.transform.localPosition = new Vector3(x,y,0);
+    DisplayCard dc = go.GetComponent<DisplayCard>();
+    _hand.Add(dc);
+    dc.Init();
+    dc.sprites = sprites;
+    //dc.DrawCard(cardValue);
+  }
+
   [RPC]
   protected override void NetworkUpdateSprite() {
-    for (int i = 0; i < handSize; i++) {
-        if (i >= hand.Count)
-          cards[i].DrawEmpty();
-        else if (Network.player == player) 
-          cards[i].DrawCard(hand[i + leftIndex].cardValue);
-        else 
-          cards[i].DrawBack();
-    }
-  }
-
-  public bool PlayCard(DisplayCard card, Group g) {
-    if (group.Count <= 0) return false;
-    int idx = -1;
-    for (idx = 0; idx < hand.Count; idx++) {
-      if (cards[idx] == card) {
-        //Debug.Log("played " + hand[idx]  + " to " + g);
-        Group.MoveCard(hand[idx], this, g);
-        UpdateSprite();
-        g.UpdateSprite();
-        return true;
+    if (hand.Count < cards.Count) {
+      for (int i = hand.Count; i < cards.Count; i++) {
+        networkView.RPC("NetworkNewDisplayCard", RPCMode.All, -8 + i * 1.3f, 0f, cards[i]);
       }
     }
-    return false;
+    if (hand.Count > cards.Count) {
+      for (int i = cards.Count; i < hand.Count; i++) {
+        networkView.RPC("NetworkDestroyDisplayCard", RPCMode.All, i);
+      }
+    }
+    
+    for (int i = 0; i < hand.Count; i++) {
+     if (Network.player == player.networkPlayer)
+       hand[i].DrawCard(cards[i]);
+     else 
+       hand[i].DrawBack();
+    }
   }
 
+  public bool PlayCard(DisplayCard dc, Group g) {
+    Group.MoveCard(dc.cardValue, this, g);
+    UpdateSprite();
+    g.UpdateSprite();
+    return true;
+  }
 }

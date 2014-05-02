@@ -1,15 +1,78 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Xml;
+using System.IO;
+using System.Text;
 
-public class CardSet : MonoBehaviour {
-  public Sprite[] cardSprites;
-  public Sprite emptySprite;
-  public Sprite outlineSprite;
-  public Sprite backSprite;
-	
-  void Start () {
-	}
-	
-	void Update () {
-	}
+public static class CardSet {
+#region Sprite Variables
+  private static Sprite[] _cardSprites;
+  private static Sprite _emptySprite;
+  private static Sprite _outlineSprite;
+  private static Sprite _backSprite;
+  
+  public static Sprite[] cardSprites  { get { return _cardSprites; } }
+  public static Sprite emptySprite    { get { return _emptySprite; } }
+  public static Sprite outlineSprite  { get { return _outlineSprite; } }
+  public static Sprite backSprite     { get { return _backSprite; } }
+
+#endregion
+#region Card Variables
+
+  [SerializeField]
+  private static List<Card> _cards;
+  private static bool _initialized = false;
+
+  public static List<Card> cards { get { return _cards; }}
+  public static bool initialized { get { return _initialized; }}
+
+#endregion
+#region Static Methods
+
+  public static void loadCards(string filename) {
+    _cards = new List<Card>();
+    TextAsset file = (TextAsset) Resources.Load("CardSets/" + filename, typeof(TextAsset));
+    if (file == null) {
+      Resources.UnloadAsset(file);
+      _initialized = false;
+      return;
+    }
+    XmlDocument xmlDoc = new XmlDocument();
+    xmlDoc.LoadXml(file.text);
+
+    
+    XmlNodeList xmlCards = xmlDoc.SelectNodes("CardSet/Card");
+    foreach (XmlNode c in xmlCards) {
+      string name = c.SelectSingleNode("Name").InnerText; 
+      string text = c.SelectSingleNode("Text").InnerText; 
+      int buyCost = Int32.Parse(c.SelectSingleNode("BuyCost").InnerText);
+      int useCost = Int32.Parse(c.SelectSingleNode("UseCost").InnerText);
+      XmlNodeList xmlEffects = c.SelectSingleNode("Effects").ChildNodes;
+      CardEffect[] effects = new CardEffect[xmlEffects.Count];
+      for (int i = 0; i < xmlEffects.Count; i++) {
+        int val = Int32.Parse(xmlEffects[i].SelectSingleNode("Value").InnerText);
+        EffectType type = ParseEnum<EffectType>(xmlEffects[i].SelectSingleNode("Type").InnerText);
+        effects[i] = new CardEffect(val, type);
+      }
+      _cards.Add(new Card(name, text, buyCost, useCost, cards.Count, effects));
+    }
+
+    _initialized = true;
+  }
+
+  public static Card GetCard(int idx) {
+    if (!initialized) {
+      return null;
+    }
+    return cards[idx];
+  }
+  
+  private static T ParseEnum<T>( string value )
+  {
+      return (T) Enum.Parse( typeof( T ), value, true );
+  }
+
+#endregion 
 }

@@ -1,0 +1,6 @@
+﻿<Piles>
+	<Pile>
+		<Name>Lethargy</Name>
+    <Quantity>10</Quantity>
+	</Pile>
+</Piles>

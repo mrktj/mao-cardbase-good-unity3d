@@ -10,20 +10,36 @@ public class GroupEditor : Editor {
   public override void OnInspectorGUI(){
     DrawDefaultInspector();
     Group g = (Group) target;
-    GUIStyle style = new GUIStyle();
-    style.normal.textColor = Color.black;
-    style.wordWrap = true;
-    style.richText = true;
+
+    g.numDefault = EditorGUILayout.IntSlider("Num Default", g.numDefault, 0, 20);
+    if (CardSet.initialized && g.numDefault > 0) {
+
+      string[] names = new string[CardSet.cards.Count];
+      int[] options = new int[CardSet.cards.Count];
+      for (int i = 0; i < CardSet.cards.Count; i++) {
+        names[i] = CardSet.GetCard(i).name;
+        options[i] = i;
+      }
+      
+      g.defaultCard = EditorGUILayout.IntPopup("Default Card", g.defaultCard, names, options);
+    }
+    else {
+      EditorGUILayout.BeginHorizontal();
+      EditorGUILayout.LabelField("Default Card \t\t\t None");
+      EditorGUILayout.EndHorizontal();
+    }
     
     if (g.group == null || g.group.Count <= 0) 
         EditorGUILayout.LabelField("No Cards");
     else {
       showCards = EditorGUILayout.Foldout(showCards, g.group.Count.ToString() + " Cards");
       if (showCards) {
-        foreach (Card c in g.group) {
-          EditorGUILayout.LabelField(c.RichText4(), style);
+        foreach (int i in g.group) {
+          EditorGUILayout.LabelField(CardSet.GetCard(i).ToString());
         }
       }
     }
+
+    if(GUI.changed){ EditorUtility.SetDirty(g);}
   }
 }

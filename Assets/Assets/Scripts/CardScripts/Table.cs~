@@ -5,14 +5,13 @@ using System.Collections.Generic;
 public class Table : Group {
   private List<DisplayCard> _table;
   public List<DisplayCard> table { get { return _table;} } 
+  public List<int> cards { get { return (List<int>) group; } }
 
-  public CardSet sprites;
-  public GameObject displayCard;
-  public float width; 
-  public float height;
+  public SpriteSet sprites;
+  public GameObject displayCardPrefab;
 
-	void Start () {
-    _group = new List<Card>();
+	void OnEnable () {
+    _group = new List<int>();
     _table = new List<DisplayCard>();
 	}
 	
@@ -27,9 +26,9 @@ public class Table : Group {
 
   public bool PickupCard(DisplayCard dc, Group g) {
     networkView.RPC("NetworkDestroyCard", RPCMode.All, dc.cardValue);
-    foreach (Card c in group) {
-      if (c.cardValue == dc.cardValue) {
-        Group.MoveCard(c, this, g);
+    foreach (int i in group) {
+      if (i == dc.cardValue) {
+        Group.MoveCard(i, this, g);
         UpdateSprite();
         g.UpdateSprite();
         return true;
@@ -39,52 +38,48 @@ public class Table : Group {
   }
 
   [RPC]
-  private void NetworkDestroyCard(int cardValue) {
-    foreach (DisplayCard dc in table) {
-      if (dc.cardValue == cardValue) { 
-        _table.Remove(dc);
-        UnityEngine.Object.Destroy(dc.gameObject);
-        return;
-      }
-    }
-  } 
-
-  [RPC]
   private void NetworkClearTable() {
     foreach (DisplayCard dc in table) {
       UnityEngine.Object.Destroy(dc.gameObject);
     }
     table.Clear();
-  } 
-
-  [RPC]
-  private void NetworkSendCardValues(float x, float y, float rot, int cardValue) {
-    GameObject go = Instantiate(displayCard, transform.position + new Vector3(x, y, this.gameObject.transform.localPosition.z), Quaternion.Euler(0, 0, rot)) as GameObject;
-    go.layer = this.gameObject.layer;
-    go.transform.parent = this.gameObject.transform;
-    DisplayCard dc = go.GetComponent<DisplayCard>();
-    table.Add(dc);
-    dc.Init();
-    dc.sprites = sprites;
-    dc.DrawCard(cardValue);
   }
 
   [RPC]
-  protected override void NetworkUpdateSprite () {
-    foreach (Card c in group) {
-      bool drawn = false;
-      foreach (DisplayCard dc in table) {
-        if (dc.cardValue == c.cardValue) {
-          drawn = true;
-          break;
-        }
-      }
-      if (!drawn) {
-        float x = Random.Range(-width/2, width/2);
-        float y = Random.Range(-height/2, height/2);
-        float rot = Random.Range(0, 360);
-        networkView.RPC("NetworkSendCardValues", RPCMode.All, x, y, rot, c.cardValue);
+  private void NetworkDestroyDisplayCard(int idx) {
+    DisplayCard dc = table[idx];
+    _table.RemoveAt(idx);
+    UnityEngine.Object.Destroy(dc.gameObject);
+  } 
+
+  [RPC]
+  private void NetworkNewDisplayCard(float x, float y, int cardValue) {
+    GameObject go = Instantiate(displayCardPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+    go.layer = this.gameObject.layer;
+    go.transform.parent = this.gameObject.transform;
+    go.transform.localPosition = new Vector3(x,y,0);
+    DisplayCard dc = go.GetComponent<DisplayCard>();
+    _table.Add(dc);
+    dc.Init();
+    dc.sprites = sprites;
+  }
+
+  [RPC]
+  protected override void NetworkUpdateSprite() {
+    if (table.Count < cards.Count) {
+      for (int i = table.Count; i < cards.Count; i++) {
+        networkView.RPC("NetworkNewDisplayCard", RPCMode.All, -8 + i * 1.3f, 0, cards[i]);
       }
     }
+    if (table.Count > cards.Count) {
+      for (int i = cards.Count; i < table.Count; i++) {
+        networkView.RPC("NetworkDestroyDisplayCard", RPCMode.All, i);
+      }
+    }
+    
+    for (int i = 0; i < table.Count; i++) {
+       table[i].DrawCard(cards[i]);
+    }
+    
   }
 }

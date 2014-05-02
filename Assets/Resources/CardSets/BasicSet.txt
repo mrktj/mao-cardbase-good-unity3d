@@ -1,0 +1,118 @@
+﻿<CardSet>
+  <SpriteDirectory>BasicSprites</SpriteDirectory>
+	<Card>
+		<Name>Lethargy</Name>
+		<Text />
+		<BuyCost>1</BuyCost>
+		<UseCost>0</UseCost>
+		<Effects>
+			<Effect>
+				<Value>1</Value>
+				<Type>ENERGY</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Energy</Name>
+		<Text />
+		<BuyCost>3</BuyCost>
+		<UseCost>0</UseCost>
+		<Effects>
+			<Effect>
+				<Value>2</Value>
+				<Type>ENERGY</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Vigor</Name>
+		<Text />
+		<BuyCost>5</BuyCost>
+		<UseCost>0</UseCost>
+		<Effects>
+			<Effect>
+				<Value>3</Value>
+				<Type>ENERGY</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Dagger</Name>
+		<Text />
+		<BuyCost>3</BuyCost>
+		<UseCost>1</UseCost>
+		<Effects>
+			<Effect>
+				<Value>1</Value>
+				<Type>ATTACK</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Sword</Name>
+		<Text />
+		<BuyCost>6</BuyCost>
+		<UseCost>1</UseCost>
+		<Effects>
+			<Effect>
+				<Value>2</Value>
+				<Type>ATTACK</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Axe</Name>
+		<Text />
+		<BuyCost>9</BuyCost>
+		<UseCost>1</UseCost>
+		<Effects>
+			<Effect>
+				<Value>3</Value>
+				<Type>ATTACK</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Helmet</Name>
+		<Text />
+		<BuyCost>1</BuyCost>
+		<UseCost>3</UseCost>
+		<Effects>
+			<Effect>
+				<Value>1</Value>
+				<Type>DEFENSE</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Shield</Name>
+		<Text />
+		<BuyCost>1</BuyCost>
+		<UseCost>5</UseCost>
+		<Effects>
+			<Effect>
+				<Value>2</Value>
+				<Type>DEFENSE</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Armor</Name>
+		<Text />
+		<BuyCost>1</BuyCost>
+		<UseCost>7</UseCost>
+		<Effects>
+			<Effect>
+				<Value>3</Value>
+				<Type>DEFENSE</Type>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Fatigue</Name>
+		<Text />
+		<BuyCost>0</BuyCost>
+		<UseCost>0</UseCost>
+		<Effects />
+	</Card>
+</CardSet>

@@ -1,0 +1,84 @@
+﻿using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class Hand : Group {
+  private List<DisplayCard> _hand;
+  public List<DisplayCard> hand { get { return _hand;} } 
+  public List<int> cards { get { return (List<int>) group; } }
+  public GameObject displayCardPrefab;
+  public Player player;
+  
+  public SpriteSet sprites;
+
+	void OnEnable () {
+	  _group = new List<int>();
+    _hand = new List<DisplayCard>();
+    Init();
+	}
+	
+	void Update () {
+	}
+
+  public bool ClearInto(Group g) {
+    networkView.RPC("NetworkClearHand", RPCMode.All);
+    ShuffleInto(g);
+    return true;
+  }
+
+  [RPC]
+  private void NetworkClearHand() {
+    foreach (DisplayCard dc in hand) {
+      UnityEngine.Object.Destroy(dc.gameObject);
+    }
+    hand.Clear();
+  }
+
+  [RPC]
+  private void NetworkDestroyDisplayCard(int idx) {
+    DisplayCard dc = hand[idx];
+    _hand.RemoveAt(idx);
+    UnityEngine.Object.Destroy(dc.gameObject);
+  } 
+
+  [RPC]
+  private void NetworkNewDisplayCard(float x, float y, int cardValue) {
+    GameObject go = Instantiate(displayCardPrefab, Vector3.zero, Quaternion.identity) as GameObject;
+    go.layer = this.gameObject.layer;
+    go.transform.parent = this.gameObject.transform;
+    go.transform.localPosition = new Vector3(x,y,0);
+    DisplayCard dc = go.GetComponent<DisplayCard>();
+    _hand.Add(dc);
+    dc.Init();
+    dc.sprites = sprites;
+    //dc.DrawCard(cardValue);
+  }
+
+  [RPC]
+  protected override void NetworkUpdateSprite() {
+    if (hand.Count < cards.Count) {
+      for (int i = hand.Count; i < cards.Count; i++) {
+        networkView.RPC("NetworkNewDisplayCard", RPCMode.All, -8 + i * 1.5f, 0f, cards[i]);
+      }
+    }
+    if (hand.Count > cards.Count) {
+      for (int i = cards.Count; i < hand.Count; i++) {
+        networkView.RPC("NetworkDestroyDisplayCard", RPCMode.All, i);
+      }
+    }
+    
+    for (int i = 0; i < hand.Count; i++) {
+     if (Network.player == player.networkPlayer)
+       hand[i].DrawCard(cards[i]);
+     else 
+       hand[i].DrawBack();
+    }
+  }
+
+  public bool PlayCard(DisplayCard dc, Group g) {
+    Group.MoveCard(dc.cardValue, this, g);
+    UpdateSprite();
+    g.UpdateSprite();
+    return true;
+  }
+}
