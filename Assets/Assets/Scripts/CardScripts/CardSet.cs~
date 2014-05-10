@@ -7,19 +7,7 @@ using System.IO;
 using System.Text;
 
 public static class CardSet {
-#region Sprite Variables
-  private static Sprite[] _cardSprites;
-  private static Sprite _emptySprite;
-  private static Sprite _outlineSprite;
-  private static Sprite _backSprite;
-  
-  public static Sprite[] cardSprites  { get { return _cardSprites; } }
-  public static Sprite emptySprite    { get { return _emptySprite; } }
-  public static Sprite outlineSprite  { get { return _outlineSprite; } }
-  public static Sprite backSprite     { get { return _backSprite; } }
-
-#endregion
-#region Card Variables
+#region Variables
 
   [SerializeField]
   private static List<Card> _cards;

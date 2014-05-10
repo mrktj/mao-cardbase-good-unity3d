@@ -34,6 +34,7 @@ public class DisplayCard : MonoBehaviour {
 
   public void DrawBack() {
     sprite = sprites.backSprite;
+    Destroy(image);
   }
 
   public void DrawEmpty() {

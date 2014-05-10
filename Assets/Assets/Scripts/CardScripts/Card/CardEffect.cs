@@ -3,6 +3,14 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+/**
+ * The type of an Effect
+ * ENERGY   - Gives the player additional energy
+ * ATTACK   - Gives the player additional attack
+ * DEFENSE  - Gives the player additional defense
+ * HEALTH   - Heals the player
+ * CARD     - The player draws cards
+ */
 public enum EffectType {
   ENERGY,
   ATTACK,
@@ -11,16 +19,31 @@ public enum EffectType {
   CARD
 };
 
+/**
+ * An effect a Card can have.
+ * A Card can have multiple CardEffects
+ */
 [Serializable]
 public class CardEffect {
-  public int val;
-  public EffectType type;
+#region Public Variables
+
+  public int val;         // The value associated with the effect
+  public EffectType type; // The type of the effect
+
+#endregion
+#region Constructors
 
   public CardEffect(int newVal, EffectType newType) {
     val = newVal;
     type = newType;
   }
 
+#endregion
+#region Public Methods
+  
+  /**
+   * Apply the CardEffect to PLAYER based on the type and value
+   */
   public void Apply(Player player) {
     switch (type) {
       case EffectType.ENERGY:
@@ -41,7 +64,12 @@ public class CardEffect {
     }
   }
 
+#endregion
+#region Override Methods
+
   public override string ToString() {  
     return "+" + val.ToString() + " " + type.ToString();
   }
+
+#endregion
 }

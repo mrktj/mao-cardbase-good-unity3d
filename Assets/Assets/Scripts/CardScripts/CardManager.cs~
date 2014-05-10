@@ -12,24 +12,54 @@ public class CardManager : MonoBehaviour {
   private int numPlayers = 2;
   private bool gameStart = false; 
   private int playerNumber = -1;
+  private Collider2D hovering = null;
 
 	void Start () {
+    CardSet.loadCards("BasicSet");
 	}
 	
 	void Update () {
+    if (gameStart) { 
+      Vector2 hover = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+      Collider2D hovered = Physics2D.OverlapPoint(hover);
+      if (hovered == null) { 
+        if (hovering != null) {
+          hovering.gameObject.transform.localScale = new Vector3(0.4f,0.4f,0.4f);
+          Vector3 temp = hovering.gameObject.transform.localPosition;
+          temp.z = 0.0f;
+          hovering.gameObject.transform.localPosition = temp;
+        }
+        hovering = null;
+      }
+      else if (hovered != hovering) {
+        if (hovering != null) {
+          hovering.gameObject.transform.localScale = new Vector3(0.4f,0.4f,0.4f);
+          Vector3 temp = hovering.gameObject.transform.localPosition;
+          temp.z = 0.0f;
+          hovering.gameObject.transform.localPosition = temp;
+        }
+        if (hovered.gameObject.tag == "CardFrame") {
+          hovering = hovered;
+          hovered.gameObject.transform.localScale = new Vector3(1,1,1);
+          Vector3 temp = hovering.gameObject.transform.localPosition;
+          temp.z = -0.1f;
+          hovering.gameObject.transform.localPosition = temp;
+        }
+      }
+    }
     if (gameStart && Input.GetMouseButtonDown(0) && !players[playerNumber].done) {
       Vector2 click = Camera.main.ScreenToWorldPoint(Input.mousePosition);
       Collider2D clicked = Physics2D.OverlapPoint(click);
       if (clicked) {
         if (clicked.gameObject.layer == LayerMask.NameToLayer("Players")) {
-          DisplayCard dc = clicked.gameObject.GetComponent<DisplayCard>();
+          DisplaySlot dc = clicked.gameObject.transform.parent.GetComponent<DisplaySlot>();
           Hand hand = dc.transform.parent.GetComponent<Hand>();
           if (hand != null && hand.transform.parent.GetComponent<Player>() == players[playerNumber]) {
             players[playerNumber].TryPlayCard(dc);
           }
         }
         if (clicked.gameObject.layer == LayerMask.NameToLayer("Piles")) {
-          Pile p = clicked.gameObject.GetComponent<Pile>();
+          Pile p = clicked.gameObject.transform.parent.GetComponent<Pile>();
           if (p != null) {
             players[playerNumber].TryGainCard(p);
           }
@@ -40,12 +70,12 @@ public class CardManager : MonoBehaviour {
 
   void OnGUI() {
     if (!gameStart && Network.isServer) {
-      if (GUI.Button(new Rect(10, 50, 120, 20), "Start Game")) {
+      if (GUI.Button(new Rect(Screen.width - 130, 10, 120, 20), "Start Game")) {
         GameInit();
         NewTurn();
       }
     }
-    if (gameStart && !players[playerNumber].done && GUI.Button(new Rect(100, 50, 120, 20), "End Turn")){ 
+    if (gameStart && !players[playerNumber].done && GUI.Button(new Rect(Screen.width - 130, 10, 120, 20), "End Turn")){ 
       players[playerNumber].EndTurn();
     }
     if (gameStart) {

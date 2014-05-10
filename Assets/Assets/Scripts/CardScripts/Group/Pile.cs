@@ -2,10 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 
+/**
+ * A Pile acts like a stack of Cards
+ */
 [System.Serializable]
 public class Pile : Group {
   public List<int> pile { get { return (List<int>) group; } }
-  public DisplayCard top;
+  public DisplaySlot top; // A DisplaySlot at the top of the Pile
 
 	void OnEnable () {
     _group = new List<int>();
@@ -19,7 +22,7 @@ public class Pile : Group {
   [RPC]
 	protected override void NetworkUpdateSprite () {
     if (pile.Count <= 0) {
-      top.DrawOutline();
+      top.DrawBlank();
     }
     else { 
       int cardValue = pile[pile.Count - 1];

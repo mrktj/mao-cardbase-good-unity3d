@@ -13,19 +13,17 @@ public class NetworkingConnector : MonoBehaviour {
         Network.Connect(connectionIP, connectionPort);
       }
       if (GUI.Button(new Rect(10, 50, 120, 20), "Initialize Server")) {
-        Debug.Log(Network.InitializeServer(32, connectionPort, false));
-        Debug.Log(Network.isServer + " " + Network.connections);
+        Network.InitializeServer(32, connectionPort, false);
       }
     }
     else if (Network.isClient) {
-      GUI.Label(new Rect(10, 10, 300, 20), "Status: Client");
-      if (GUI.Button(new Rect(10, 30, 120, 20), "Disconnect")) {
+      if (GUI.Button(new Rect(10, 10, 120, 20), "Disconnect")) {
         Network.Disconnect(200);
       }
     }
     else if (Network.isServer) {
-      GUI.Label(new Rect(10, 10, 300, 20), "Status: Server - " + Network.connections.Length + " connected");
-      if (GUI.Button(new Rect(10, 30, 120, 20), "Disconnect")) {
+      GUI.Label(new Rect(10, 30, 300, 20), "Status: Server - " + Network.connections.Length + " connected");
+      if (GUI.Button(new Rect(10, 10, 120, 20), "Disconnect")) {
           Network.Disconnect(200);
       }
     }

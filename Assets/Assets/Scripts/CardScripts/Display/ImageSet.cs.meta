@@ -1,0 +1,11 @@
+fileFormatVersion: 2
+guid: b78b10a3d767eb847bef2383df189950
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - Card: {fileID: 100008, guid: 5c5fcd2c46df4a349af816724607f347, type: 2}
+  - Blank: {fileID: 100000, guid: 2cc9ad0ac5e853845aa929c89048e9b1, type: 2}
+  - Back: {fileID: 100000, guid: 7b38486e939db3c47973d76cbe058e86, type: 2}
+  executionOrder: -1
+  icon: {fileID: -1016138426, guid: 0000000000000000d000000000000000, type: 0}
+  userData: 

@@ -7,24 +7,22 @@ public class NetworkingConnector : MonoBehaviour {
 
   void OnGUI() {
     if (Network.peerType == NetworkPeerType.Disconnected) {
-      GUI.Label(new Rect(10, 10, 300, 20), "Status: Disconnected");
       connectionIP = GUI.TextField(new Rect(130, 30, 240, 20), connectionIP);
-      if (GUI.Button(new Rect(10, 30, 120, 20), "Client Connect")) {
+      if (GUI.Button(new Rect(10, 10, 120, 20), "Client Connect")) {
         Network.Connect(connectionIP, connectionPort);
       }
-      if (GUI.Button(new Rect(10, 50, 120, 20), "Initialize Server")) {
+      if (GUI.Button(new Rect(10, 30, 120, 20), "Initialize Server")) {
         Network.InitializeServer(32, connectionPort, false);
       }
     }
     else if (Network.isClient) {
-      GUI.Label(new Rect(10, 10, 300, 20), "Status: Client");
-      if (GUI.Button(new Rect(10, 30, 120, 20), "Disconnect")) {
+      if (GUI.Button(new Rect(10, 10, 120, 20), "Disconnect")) {
         Network.Disconnect(200);
       }
     }
     else if (Network.isServer) {
-      GUI.Label(new Rect(10, 10, 300, 20), "Status: Server - " + Network.connections.Length + " connected");
-      if (GUI.Button(new Rect(10, 30, 120, 20), "Disconnect")) {
+      GUI.Label(new Rect(10, 30, 300, 20), "Status: Server - " + Network.connections.Length + " connected");
+      if (GUI.Button(new Rect(10, 10, 120, 20), "Disconnect")) {
           Network.Disconnect(200);
       }
     }

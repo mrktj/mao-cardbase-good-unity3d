@@ -38,10 +38,9 @@ public class Player : MonoBehaviour {
     _table.ClearInto(_discard);
     _hand.ClearInto(_discard);
     Draw(DefaultHandSize);
-    Debug.Log(networkPlayer + ": " + health);
   }
 
-  public void TryPlayCard(DisplayCard dc) {
+  public void TryPlayCard(DisplaySlot dc) {
     Card played = CardSet.GetCard(dc.cardValue);
     if (played.useCost > energy) return;
     UseEnergy(played.useCost);
@@ -70,7 +69,7 @@ public class Player : MonoBehaviour {
   }
 
   public void TakeDamage(int val) {
-    if (val < 0) throw new System.ArgumentException("Parameter must be positive", "val");
+    if (val <= 0) return;
     networkView.RPC("NetworkTakeDamage", RPCMode.All, val);
   }
 
@@ -97,7 +96,6 @@ public class Player : MonoBehaviour {
     if (p.numDefault <= 0) return;
     Card pileCard = CardSet.GetCard(p.defaultCard);
     if (pileCard.buyCost > energy) return;
-    Debug.Log(pileCard.buyCost + " " + energy);
     UseEnergy(pileCard.buyCost);
     GainCard(p);
   }

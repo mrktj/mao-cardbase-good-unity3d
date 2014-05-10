@@ -1,5 +1,4 @@
 ﻿<CardSet>
-  <SpriteDirectory>BasicSprites</SpriteDirectory>
 	<Card>
 		<Name>Lethargy</Name>
 		<Text />
