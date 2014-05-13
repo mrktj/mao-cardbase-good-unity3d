@@ -10,9 +10,8 @@ using System.Collections.Generic;
 public class ImageSet : MonoBehaviour {
 #region Public Variables
 
+  public GameObject Instance;
   public GameObject Card;   // Image template of a Card 
-  public GameObject Blank;  // Image of the outline of a Card 
-  public GameObject Back;   // Image of the back of a Card
 
 #endregion
 #region Private Static Variables
@@ -22,8 +21,7 @@ public class ImageSet : MonoBehaviour {
    * They are static so that they can be accessed any time
    */
   private static GameObject CardFrame;
-  private static GameObject BlankCard;
-  private static GameObject CardBack;
+  private static GameObject SetInstance;
 
 #endregion
 #region Unity Methods
@@ -31,8 +29,7 @@ public class ImageSet : MonoBehaviour {
   void OnEnable() {
     // Set the static variables 
     CardFrame = Card;
-    BlankCard = Blank;
-    CardBack = Back;
+    SetInstance = Instance;
   }
 
 #endregion
@@ -42,19 +39,26 @@ public class ImageSet : MonoBehaviour {
    * Return the image of the Card with cardValue IDX as a GameObject
    * The returned GameObject will be the child of PARENT
    */
-  public static GameObject GetImage(int idx, GameObject parent) {
+  public static GameObject GetNewImage(int idx, GameObject parent) {
     if (!CardSet.initialized) 
       throw new System.InvalidOperationException("CardSet is not initialized");
     GameObject image = 
-      GameObject.Instantiate(CardFrame, Vector3.zero, Quaternion.identity) 
+      Network.Instantiate(CardFrame, Vector3.zero, Quaternion.identity, 0)
       as GameObject;
-    image.transform.parent = parent.transform;
-    //image.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+    SetInstance.networkView.RPC("NetworkInitCard", RPCMode.All, image.networkView.viewID,
+      parent.networkView.viewID, parent.layer, idx);
+    return image;
+  }
+
+  [RPC]
+  private void NetworkInitCard(NetworkViewID ID, NetworkViewID parentID, int layer, int idx) {
+    GameObject image = NetworkView.Find(ID).observed.gameObject;
+    image.transform.parent = NetworkView.Find(parentID).observed.gameObject.transform;
     image.transform.localPosition = Vector3.zero;
-    int parentLayer = parent.layer;
-    image.layer = parentLayer;
+    image.transform.rotation = Quaternion.identity;
+    image.layer = layer;
     foreach (Transform child in image.GetComponentsInChildren<Transform>()) {
-      child.gameObject.layer = parentLayer;
+      child.gameObject.layer = layer;
     }
     Card card = CardSet.GetCard(idx);
     foreach (TextMesh t in image.GetComponentsInChildren<TextMesh>()) {
@@ -73,47 +77,26 @@ public class ImageSet : MonoBehaviour {
           break;
       }
     }
-    return image;
   }
-
+  
   /** 
    * Return the image of the outline of a Card as a GameObject
    * The returned GameObject will be the child of PARENT
    */
-  public static GameObject GetBlank(GameObject parent) {
-    if (!CardSet.initialized) 
-      throw new System.InvalidOperationException("CardSet is not initialized");
-    GameObject image = 
-      GameObject.Instantiate(BlankCard, Vector3.zero, Quaternion.identity) 
-      as GameObject;
-    image.transform.parent = parent.transform;
-    image.transform.localPosition = Vector3.zero;
-    int parentLayer = parent.layer;
-    image.layer = parentLayer;
-    foreach (Transform child in image.GetComponentsInChildren<Transform>()) {
-      child.gameObject.layer = parentLayer;
-    }
-    return image;
+  public static ImageAnimator GetNewBlank(GameObject parent) {
+    ImageAnimator obj = GetNewImage(0, parent).GetComponent<ImageAnimator>();
+    obj.DrawBlank();
+    return obj;
   }
 
   /** 
    * Return the image of the back of a Card as a GameObject
    * The returned GameObject will be the child of PARENT
    */
-  public static GameObject GetBack(GameObject parent) {
-    if (!CardSet.initialized) 
-      throw new System.InvalidOperationException("CardSet is not initialized");
-    GameObject image = 
-      GameObject.Instantiate(CardBack, Vector3.zero, Quaternion.identity) 
-      as GameObject;
-    image.transform.parent = parent.transform;
-    image.transform.localPosition = Vector3.zero;
-    int parentLayer = parent.layer;
-    image.layer = parentLayer;
-    foreach (Transform child in image.GetComponentsInChildren<Transform>()) {
-      child.gameObject.layer = parentLayer;
-    }
-    return image;
+  public static ImageAnimator GetNewBack(GameObject parent) {
+    ImageAnimator obj = GetNewImage(0, parent).GetComponent<ImageAnimator>();
+    obj.DrawBack();
+    return obj;
   }
 
 #endregion

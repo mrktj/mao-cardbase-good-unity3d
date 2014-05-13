@@ -8,17 +8,25 @@ using System.Linq;
  */
 [Serializable]
 public class Deck : Group {
-  public DisplaySlot top; // A DisplaySlot at the top of the Deck
-  
+  public ImageAnimator top; // A DisplaySlot at the top of the Deck
   private static System.Random random = new System.Random(); 
 
   void OnEnable() {
     _group = new List<int>();
-    Init();
-    NetworkUpdateSprite();
+    if (Network.isServer) {
+      top = ImageSet.GetNewBlank(gameObject);
+      networkView.RPC("NetworkSetTop", RPCMode.Others, top.networkView.viewID);
+      Init();
+      UpdateSprite();
+    }
   }
 
 	void Update () {
+  }
+
+  [RPC]
+  private void NetworkSetTop(NetworkViewID id) {
+    top = NetworkView.Find(id).observed.gameObject.GetComponent<ImageAnimator>();
   }
 
   [RPC]
@@ -31,11 +39,14 @@ public class Deck : Group {
     }
 	}
 
+  protected override void SendSlot(GameObject obj) {
+    return;
+  }
+
   public bool DealCard(Group g) {
     if (group.Count <= 0) return false;
     int randomCard = group.ElementAt(random.Next(group.Count)); 
-    Group.MoveCard(randomCard, this, g);
-    //Debug.Log("dealt " + randomCard + " to " + g);
+    Group.MoveDisplaySlot(NewDisplaySlot(randomCard), this, g);
     UpdateSprite();
     g.UpdateSprite();
     return true;

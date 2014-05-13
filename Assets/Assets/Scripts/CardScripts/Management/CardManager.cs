@@ -10,6 +10,7 @@ public class CardManager : MonoBehaviour {
   public Player[] players;
   public Pile[] piles;
   public Player playerPrefab;
+  public GameObject defaultPiles;
 
   public int numPiles { get { return piles.Length; } }
   private int numPlayers = 2;
@@ -17,6 +18,7 @@ public class CardManager : MonoBehaviour {
   private int playerNumber = -1;
   private Collider2D hovering = null;
   private float lastHover = 0; 
+
 
   /**
    * The main loop
@@ -29,12 +31,8 @@ public class CardManager : MonoBehaviour {
 
       // Nothing is being hovered over, revert previous Card to normal size
       if (hovering != null && (hovered == null || hovered != hovering)) { 
-        if (hovering.gameObject.layer == LayerMask.NameToLayer("Players")) {
-          hovering.GetComponent<Animator>().SetBool("HandBig",false);
-        }
-        else {
-          hovering.GetComponent<Animator>().SetBool("Big",false);
-        }
+        bool inHand = hovering.gameObject.layer == LayerMask.NameToLayer("Players");
+        hovering.GetComponent<ImageAnimator>().MakeSmall(inHand);
         hovering = null;
       }
       // If a Card is being hovered over, make it temporarily larger
@@ -42,12 +40,8 @@ public class CardManager : MonoBehaviour {
           && Time.time - lastHover > 0.2) {
         lastHover = Time.time;
         hovering = hovered;
-        if (hovering.gameObject.layer == LayerMask.NameToLayer("Players")) {
-          hovering.GetComponent<Animator>().SetBool("HandBig",true);
-        }
-        else {
-          hovering.GetComponent<Animator>().SetBool("Big",true);
-        }
+        bool inHand = hovering.gameObject.layer == LayerMask.NameToLayer("Players");
+        hovering.GetComponent<ImageAnimator>().MakeBig(inHand);
       }
     }
 
@@ -58,19 +52,17 @@ public class CardManager : MonoBehaviour {
       Vector2 click = Camera.main.ScreenToWorldPoint(Input.mousePosition);
       Collider2D clicked = Physics2D.OverlapPoint(click);
       if (clicked) {
-        // If a DisplayCard in the Hand is clicked try to play it
+        // If a DisplaySlot in the Hand is clicked try to play it
         if (clicked.gameObject.layer == LayerMask.NameToLayer("Players")) {
-          Transform parentClicked = clicked.gameObject.transform.parent;
-          DisplaySlot dc = parentClicked.GetComponent<DisplaySlot>();
-          Hand hand = dc.transform.parent.GetComponent<Hand>();
+          Hand hand = clicked.transform.parent.GetComponent<Hand>();
           if (hand != null && 
               hand.transform.parent.GetComponent<Player>() == players[playerNumber]) {
-            players[playerNumber].TryPlayCard(dc);
+            players[playerNumber].TryPlayCard(clicked.gameObject);
           }
         }
-        // If a DisplayCard in a Pile is clicked try to purchase it
+        // If a DisplaySlot in a Pile is clicked try to purchase it
         if (clicked.gameObject.layer == LayerMask.NameToLayer("Piles")) {
-          Pile p = clicked.gameObject.transform.parent.GetComponent<Pile>();
+          Pile p = clicked.transform.parent.GetComponent<Pile>();
           if (p != null) {
             players[playerNumber].TryGainCard(p);
           }
@@ -85,7 +77,7 @@ public class CardManager : MonoBehaviour {
       if (GUI.Button(new Rect(Screen.width - 130, 10, 120, 20), "Start Game")) {
         GameInit();
         foreach (Player p in players) {
-          p.NewTurn();
+          StartCoroutine(p.NewTurn());
         }
       }
     }
@@ -95,6 +87,8 @@ public class CardManager : MonoBehaviour {
           GUI.Button(new Rect(Screen.width - 130, 10, 120, 20), "End Turn")){ 
         players[playerNumber].EndTurn();
       }
+    }
+    if (gameStart) {
 
       // Check to see if both players have ended their turn
       bool end = true;
@@ -109,7 +103,7 @@ public class CardManager : MonoBehaviour {
         players[0].TakeDamage(players[1].attack - players[0].defense);
         players[1].TakeDamage(players[0].attack - players[0].defense);
         foreach (Player p in players) {
-          p.NewTurn();
+          StartCoroutine(p.NewTurn());
         }
       }
     }
@@ -133,9 +127,13 @@ public class CardManager : MonoBehaviour {
       networkView.RPC("AddPlayer", RPCMode.Others, players[i].networkView.viewID, player);
     }
 
+    Network.Instantiate(defaultPiles, new Vector3(0, 0, 0), Quaternion.identity, 0);
+    gameStart = true;
+
     // Swap the positions of the players so that you're always on the bottom
     networkView.RPC("Swap", RPCMode.Others);
   }
+
 
   /**
    * Swap the positions of the player hands
@@ -148,6 +146,8 @@ public class CardManager : MonoBehaviour {
     Quaternion temp2 = players[0].transform.rotation;
     players[0].transform.rotation = players[1].transform.rotation;
     players[1].transform.rotation = temp2;
+
+    gameStart = true;
   }
 
   /**
@@ -155,7 +155,6 @@ public class CardManager : MonoBehaviour {
    */
   [RPC]
   private void SetNumber(int num) {
-    gameStart = true;
     playerNumber = (int) Int32.Parse(Network.player.ToString());
     players = new Player[num];
   }

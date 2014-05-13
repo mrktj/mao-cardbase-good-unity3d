@@ -28,6 +28,7 @@ public abstract class Group : MonoBehaviour {
   [HideInInspector]
   [SerializeField]
   public int numDefault;  // The number of default Cards to start with
+  public GameObject displayCardPrefab;
 
 #endregion 
 #region Protected Methods
@@ -35,7 +36,7 @@ public abstract class Group : MonoBehaviour {
   /* Initialize the group to numDefault defaultCards. */
   protected void Init() {
     for (int i = 0; i < numDefault; i++) {
-      _group.Add(defaultCard);
+      Add(defaultCard);
     }
   }
 
@@ -51,6 +52,16 @@ public abstract class Group : MonoBehaviour {
   private void Remove(int i) {
     networkView.RPC("NetworkRemove", RPCMode.All, i);
   }
+
+  protected GameObject NewDisplaySlot(int cardValue) {
+    return ImageSet.GetNewImage(cardValue, gameObject).gameObject;
+  }
+
+  protected void DestroyDisplaySlot(GameObject obj) {
+    NetworkViewID id = obj.networkView.viewID;
+    Network.Destroy(id);
+    //networkView.RPC("NetworkDestroySlot", RPCMode.All, id);
+  } 
 
 #endregion 
 #region Public Methods
@@ -78,6 +89,14 @@ public abstract class Group : MonoBehaviour {
     from.Remove(i);
     to.Add(i);
   }
+  
+  public static void MoveDisplaySlot(GameObject obj, Group from, Group to) {
+    from.SendSlot(obj);
+    to.ReceiveSlot(obj);
+    Group.MoveCard(obj.GetComponent<ImageAnimator>().cardValue, from, to);
+    from.UpdateSprite();
+    to.UpdateSprite();
+  }
 
 #endregion 
 #region Networking Methods
@@ -98,7 +117,35 @@ public abstract class Group : MonoBehaviour {
   }
 
   [RPC]
+  private void NetworkDestroySlot(NetworkViewID id) {
+    GameObject obj = NetworkView.Find(id).observed.gameObject;
+    UnityEngine.Object.Destroy(obj);
+  }
+
+  [RPC]
+  private void NetworkTranslateSlot(NetworkViewID id, Vector3 pos) {
+    GameObject obj = NetworkView.Find(id).observed.gameObject;
+    obj.GetComponent<ImageAnimator>().MoveTo(pos);
+  }
+
+  [RPC]
+  private IEnumerator NetworkTranslateDestroy(NetworkViewID id, Vector3 pos) {
+    GameObject obj = NetworkView.Find(id).observed.gameObject;
+    yield return StartCoroutine(obj.GetComponent<ImageAnimator>().SmoothMove(pos, ImageAnimator.moveTime));
+    UnityEngine.Object.Destroy(obj);
+  }
+
+  [RPC]
   protected virtual void NetworkUpdateSprite() {
+  }
+
+#endregion 
+#region Virtual Functions
+  
+  protected virtual void SendSlot(GameObject obj) {
+  }
+
+  protected virtual void ReceiveSlot(GameObject obj) {
   }
 
 #endregion 

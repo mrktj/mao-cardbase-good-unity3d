@@ -4,17 +4,18 @@ using System.Collections.Generic;
 
 /**
  * A Hand is a Group where all the Cards are only visible to one Player
+ * If player is null, then the hand is open and all cards are visible
  */
 public class Hand : Group {
-  private List<DisplaySlot> _hand; // A List of DisplaySlots to display Cards
-  public List<DisplaySlot> hand { get { return _hand;} } 
+  private List<GameObject> _slots; // A List of DisplaySlots to display Cards
+  public List<GameObject> slots { get { return _slots;} } 
   public List<int> cards { get { return (List<int>) group; } }
-  public GameObject displayCardPrefab; // The DisplaySlot prefab
+  //public GameObject displayCardPrefab; // The DisplaySlot prefab
   public Player player; // the Player this hand belongs to
   
 	void OnEnable () {
 	  _group = new List<int>();
-    _hand = new List<DisplaySlot>();
+    _slots = new List<GameObject>();
     Init();
 	}
 	
@@ -22,65 +23,69 @@ public class Hand : Group {
    * Clear the Hand and place all Cards into Group G
    */
   public bool ClearInto(Group g) {
-    networkView.RPC("NetworkClearHand", RPCMode.All);
-    ShuffleInto(g);
+    while (slots.Count > 0) {
+      MoveDisplaySlot(slots[0], this, g);
+    }
+    //ShuffleInto(g);
     return true;
   }
 
   /**
-   * Play the Card shown in DisplaySlot DC into Group G
+   * Play the Card shown in DisplaySlot obj into Group G
    */
-  public bool PlayCard(DisplaySlot dc, Group g) {
-    Group.MoveCard(dc.cardValue, this, g);
-    UpdateSprite();
-    g.UpdateSprite();
+  public bool PlayCard(GameObject obj, Group g) {
+    Hand.MoveDisplaySlot(obj, this, (Hand) g);
     return true;
+  }
+
+  /**
+   * A hand is open if player is null. 
+   * Anyone can see the contents of an open hand
+   */
+  public bool IsOpen() {
+    if (player == null) return true;
+    return false;
   }
 
   [RPC]
   private void NetworkClearHand() {
-    foreach (DisplaySlot dc in hand) {
-      UnityEngine.Object.Destroy(dc.gameObject);
-    }
-    hand.Clear();
+    slots.Clear();
+  }
+
+  protected override void SendSlot(GameObject obj) {
+    int idx = _slots.IndexOf(obj);
+    networkView.RPC("NetworkSendSlot", RPCMode.All, idx);
   }
 
   [RPC]
-  private void NetworkDestroyDisplaySlot(int idx) {
-    DisplaySlot dc = hand[idx];
-    _hand.RemoveAt(idx);
-    UnityEngine.Object.Destroy(dc.gameObject);
-  } 
+  private void NetworkSendSlot(int idx) {
+    _slots.RemoveAt(idx);
+  }
+
+  protected override void ReceiveSlot(GameObject obj) {
+    NetworkViewID netIdx = obj.gameObject.GetComponent<NetworkView>().viewID;
+    networkView.RPC("NetworkReceiveSlot", RPCMode.All, netIdx);
+  }
 
   [RPC]
-  private void NetworkNewDisplaySlot(float x, float y, int cardValue) {
-    GameObject go = Instantiate(displayCardPrefab, Vector3.zero, Quaternion.identity) as GameObject;
-    go.layer = this.gameObject.layer;
-    go.transform.parent = this.gameObject.transform;
-    go.transform.localPosition = new Vector3(x,y,0);
-    DisplaySlot dc = go.GetComponent<DisplaySlot>();
-    _hand.Add(dc);
-    //dc.DrawCard(cardValue);
+  private void NetworkReceiveSlot(NetworkViewID id) {
+    GameObject obj = NetworkView.Find(id).observed.gameObject;
+    obj.transform.parent = this.gameObject.transform;
+    obj.layer = this.gameObject.layer;
+    obj.transform.localRotation = Quaternion.identity;
+    obj.GetComponent<ImageAnimator>().MoveTo(new Vector3(-8 + slots.Count * 1.5f, 0, 0));
+    _slots.Add(obj);
   }
 
   [RPC]
   protected override void NetworkUpdateSprite() {
-    if (hand.Count < cards.Count) {
-      for (int i = hand.Count; i < cards.Count; i++) {
-        networkView.RPC("NetworkNewDisplaySlot", RPCMode.All, -8 + i * 1.5f, 0f, cards[i]);
-      }
-    }
-    if (hand.Count > cards.Count) {
-      for (int i = cards.Count; i < hand.Count; i++) {
-        networkView.RPC("NetworkDestroyDisplaySlot", RPCMode.All, i);
-      }
-    }
-    
-    for (int i = 0; i < hand.Count; i++) {
-     if (Network.player == player.networkPlayer)
-       hand[i].DrawCard(cards[i]);
-     else 
-       hand[i].DrawBack();
+    for (int i = 0; i < slots.Count; i++) {
+      networkView.RPC("NetworkTranslateSlot", RPCMode.All, 
+          _slots[i].networkView.viewID, new Vector3(-8 + i*1.5f, 0, 0));
+      if (player == null || Network.player == player.networkPlayer)
+        slots[i].GetComponent<ImageAnimator>().DrawCard(cards[i]);
+      else 
+        slots[i].GetComponent<ImageAnimator>().DrawBack();
     }
   }
 

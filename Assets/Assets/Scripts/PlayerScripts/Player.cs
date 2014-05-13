@@ -5,7 +5,7 @@ public class Player : MonoBehaviour {
   public Deck _deck;
   public Hand _hand;
   public Pile _discard;
-  public Table _table;
+  public Hand _table;
   private int _energy;
   private int _health;
   private int _attack;
@@ -33,15 +33,16 @@ public class Player : MonoBehaviour {
     networkView.RPC("NetworkEndTurn", RPCMode.All);
   }
 
-  public void NewTurn() {
+  public IEnumerator NewTurn() {
     networkView.RPC("NetworkNewTurn", RPCMode.All);
     _table.ClearInto(_discard);
     _hand.ClearInto(_discard);
+    yield return new WaitForSeconds(ImageAnimator.moveTime * 2);
     Draw(DefaultHandSize);
   }
 
-  public void TryPlayCard(DisplaySlot dc) {
-    Card played = CardSet.GetCard(dc.cardValue);
+  public void TryPlayCard(GameObject dc) {
+    Card played = CardSet.GetCard(dc.GetComponent<ImageAnimator>().cardValue);
     if (played.useCost > energy) return;
     UseEnergy(played.useCost);
     _hand.PlayCard(dc, _table);
