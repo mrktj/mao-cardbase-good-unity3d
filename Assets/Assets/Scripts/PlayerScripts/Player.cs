@@ -9,13 +9,11 @@ public class Player : MonoBehaviour {
   private int _energy;
   private int _health;
   private int _attack;
-  private int _defense;
   private bool _done;
   public bool done { get { return _done; } }
   public int energy { get { return _energy; } }
   public int health { get { return _health; } }
   public int attack { get { return _attack; } }
-  public int defense { get { return _defense; } }
   
   public int DefaultHandSize = 4;
   public int DefaultHealth = 20;
@@ -63,11 +61,6 @@ public class Player : MonoBehaviour {
   public void Attack(int val) {
     if (val <= 0) throw new System.ArgumentException("Parameter must be positive", "val");
     networkView.RPC("NetworkAttack", RPCMode.All, val);
-  }
-
-  public void Defend(int val) {
-    if (val <= 0) throw new System.ArgumentException("Parameter must be positive", "val");
-    networkView.RPC("NetworkDefend", RPCMode.All, val);
   }
 
   public void TakeDamage(int val) {
@@ -126,10 +119,6 @@ public class Player : MonoBehaviour {
     _health += val;
   }
 
-  [RPC]
-  private void NetworkDefend(int val) {
-    _defense += val;
-  }
 
   [RPC]
   private void NetworkAttack(int val) {
@@ -146,7 +135,6 @@ public class Player : MonoBehaviour {
     _done = false;
     _energy = 0;
     _attack = 0;
-    _defense = 0;
   }
 
 }

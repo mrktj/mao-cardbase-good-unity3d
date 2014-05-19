@@ -86,7 +86,6 @@ public abstract class Group : MonoBehaviour {
 
   /* Move the Card with cardValue i in Group FROM to Group TO */
   public static void MoveCard(int i, Group from, Group to) {
-    Debug.Log(i);
     from.Remove(i);
     to.Add(i);
   }

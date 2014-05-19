@@ -14,7 +14,6 @@ using System.Collections.Generic;
 public enum EffectType {
   ENERGY,
   ATTACK,
-  DEFENSE,
   HEALTH,
   CARD
 };
@@ -51,9 +50,6 @@ public class CardEffect {
         break;
       case EffectType.ATTACK:
         player.Attack(val);
-        break;
-      case EffectType.DEFENSE:
-        player.Defend(val);
         break;
       case EffectType.HEALTH:
         player.Heal(val);

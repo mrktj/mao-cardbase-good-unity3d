@@ -100,8 +100,8 @@ public class CardManager : MonoBehaviour {
       }
       // Apply damage and start a new turn 
       if (end == true) {
-        players[0].TakeDamage(players[1].attack - players[0].defense);
-        players[1].TakeDamage(players[0].attack - players[0].defense);
+        players[0].TakeDamage(players[1].attack - players[0].attack);
+        players[1].TakeDamage(players[0].attack - players[1].attack);
         foreach (Player p in players) {
           StartCoroutine(p.NewTurn());
         }
