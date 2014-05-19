@@ -20,6 +20,7 @@ public class Player : MonoBehaviour {
   public int DefaultHandSize = 4;
   public int DefaultHealth = 20;
   public NetworkPlayer networkPlayer;
+  public Player opponent;
 
 	void OnEnable () {
     _health = DefaultHealth;
@@ -46,7 +47,7 @@ public class Player : MonoBehaviour {
     if (played.useCost > energy) return;
     UseEnergy(played.useCost);
     _hand.PlayCard(dc, _table);
-    played.ApplyCardEffects(this);
+    played.ApplyCardEffects(this, opponent);
   }
 
   public void GainEnergy(int val) {

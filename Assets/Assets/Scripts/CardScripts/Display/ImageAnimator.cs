@@ -51,6 +51,7 @@ public class ImageAnimator : MonoBehaviour {
     animator.SetBool("Blank", false);
     animator.SetBool("Back", false);
     animator.SetTrigger("Revert");
+    transform.rotation = Quaternion.identity;
     networkView.RPC("NetworkDrawCard",RPCMode.All, networkView.viewID, val);
   }
 
@@ -59,11 +60,11 @@ public class ImageAnimator : MonoBehaviour {
     GameObject image = NetworkView.Find(ID).observed.gameObject;
     Card card = CardSet.GetCard(idx);
     foreach (TextMesh t in image.GetComponentsInChildren<TextMesh>()) {
-      switch (t.text) {
-        case "b":
+      switch (t.gameObject.name) {
+        case "BuyCost":
           t.text = card.buyCost.ToString();
           break;
-        case "u":
+        case "UseCost":
           t.text = card.useCost.ToString();
           break;
         case "Text":

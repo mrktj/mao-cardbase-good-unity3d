@@ -36,7 +36,7 @@ public abstract class Group : MonoBehaviour {
   /* Initialize the group to numDefault defaultCards. */
   protected void Init() {
     for (int i = 0; i < numDefault; i++) {
-      Add(defaultCard);
+      networkView.RPC("NetworkAdd", RPCMode.All, defaultCard);
     }
   }
 
@@ -86,6 +86,7 @@ public abstract class Group : MonoBehaviour {
 
   /* Move the Card with cardValue i in Group FROM to Group TO */
   public static void MoveCard(int i, Group from, Group to) {
+    Debug.Log(i);
     from.Remove(i);
     to.Add(i);
   }

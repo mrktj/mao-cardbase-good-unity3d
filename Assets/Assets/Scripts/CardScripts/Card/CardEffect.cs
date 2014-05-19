@@ -44,7 +44,7 @@ public class CardEffect {
   /**
    * Apply the CardEffect to PLAYER based on the type and value
    */
-  public void Apply(Player player) {
+  public void Apply(Player player, Player opponent) {
     switch (type) {
       case EffectType.ENERGY:
         player.GainEnergy(val);

@@ -47,6 +47,7 @@ public class ImageSet : MonoBehaviour {
       as GameObject;
     SetInstance.networkView.RPC("NetworkInitCard", RPCMode.All, image.networkView.viewID,
       parent.networkView.viewID, parent.layer, idx);
+    image.GetComponent<ImageAnimator>().DrawCard(idx);
     return image;
   }
 
@@ -59,23 +60,6 @@ public class ImageSet : MonoBehaviour {
     image.layer = layer;
     foreach (Transform child in image.GetComponentsInChildren<Transform>()) {
       child.gameObject.layer = layer;
-    }
-    Card card = CardSet.GetCard(idx);
-    foreach (TextMesh t in image.GetComponentsInChildren<TextMesh>()) {
-      switch (t.text) {
-        case "b":
-          t.text = card.buyCost.ToString();
-          break;
-        case "u":
-          t.text = card.useCost.ToString();
-          break;
-        case "Text":
-          t.text = card.fullText;
-          break;
-        case "Name":
-          t.text = card.name;
-          break;
-      }
     }
   }
   

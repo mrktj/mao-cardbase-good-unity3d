@@ -131,21 +131,24 @@ public class CardManager : MonoBehaviour {
     gameStart = true;
 
     // Swap the positions of the players so that you're always on the bottom
-    networkView.RPC("Swap", RPCMode.Others);
+    networkView.RPC("Post", RPCMode.Others);
   }
 
 
   /**
    * Swap the positions of the player hands
+   * Do Other things post initialize
    */
   [RPC]
-  private void Swap() {
+  private void Post() {
     Vector3 temp = players[0].transform.position;
     players[0].transform.position = players[1].transform.position;
     players[1].transform.position = temp;
     Quaternion temp2 = players[0].transform.rotation;
     players[0].transform.rotation = players[1].transform.rotation;
     players[1].transform.rotation = temp2;
+    players[0].opponent = players[1];
+    players[1].opponent = players[0];
 
     gameStart = true;
   }

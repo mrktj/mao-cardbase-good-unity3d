@@ -76,9 +76,9 @@ public class Card {
 #region Public Methods
 
   /* Apply the Effects of the Card to PLAYER */
-  public void ApplyCardEffects(Player player) {
+  public void ApplyCardEffects(Player player, Player opponent) {
     foreach (CardEffect ce in effects) {
-      ce.Apply(player);
+      ce.Apply(player, opponent);
     }
   }
 
