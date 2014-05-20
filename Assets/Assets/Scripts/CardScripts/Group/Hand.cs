@@ -16,8 +16,28 @@ public class Hand : Group {
 	void OnEnable () {
 	  _group = new List<int>();
     _slots = new List<GameObject>();
-    Init();
+    if (Network.isServer) {
+      Init();
+      UpdateSprite();
+    }
 	}
+
+  void Start () {
+  }
+
+  public void Setup() {
+    if (Network.isServer) {
+      Init();
+      InitSlots();
+      UpdateSprite();
+    }
+  }
+
+  public void InitSlots() {
+    for (int i = 0; i < _group.Count; i++) {
+      ReceiveSlot(NewDisplaySlot(cards[i]));
+    }
+  }
 	
   /**
    * Clear the Hand and place all Cards into Group G
@@ -34,7 +54,7 @@ public class Hand : Group {
    * Play the Card shown in DisplaySlot obj into Group G
    */
   public bool PlayCard(GameObject obj, Group g) {
-    Hand.MoveDisplaySlot(obj, this, (Hand) g);
+    MoveDisplaySlot(obj, this, g);
     return true;
   }
 

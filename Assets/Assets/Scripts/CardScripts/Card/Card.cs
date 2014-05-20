@@ -38,7 +38,7 @@ public class Card {
       foreach (CardEffect e in effects) {
         output += e.ToString() + "\n";
       }
-      return output;
+      return output.Trim();
     }
   }
 
@@ -76,9 +76,15 @@ public class Card {
 #region Public Methods
 
   /* Apply the Effects of the Card to PLAYER */
-  public void ApplyCardEffects(Player player, Player opponent) {
+  public void OnPlayEffects(Player player, Player opponent) {
     foreach (CardEffect ce in effects) {
-      ce.Apply(player, opponent);
+      ce.OnPlay(player, opponent);
+    }
+  }
+
+  public void OnDiscardEffects(Player player, Player opponent) {
+    foreach (CardEffect ce in effects) {
+      ce.OnDiscard(player, opponent);
     }
   }
 

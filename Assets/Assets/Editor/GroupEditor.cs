@@ -14,14 +14,7 @@ public class GroupEditor : Editor {
     g.numDefault = EditorGUILayout.IntSlider("Num Default", g.numDefault, 0, 20);
     if (CardSet.initialized && g.numDefault > 0) {
 
-      string[] names = new string[CardSet.cards.Count];
-      int[] options = new int[CardSet.cards.Count];
-      for (int i = 0; i < CardSet.cards.Count; i++) {
-        names[i] = CardSet.GetCard(i).name;
-        options[i] = i;
-      }
-      
-      g.defaultCard = EditorGUILayout.IntPopup("Default Card", g.defaultCard, names, options);
+      g.defaultCard = EditorGUILayout.Popup("Default Card", g.defaultCard, CardSet.names);
     }
     else {
       EditorGUILayout.BeginHorizontal();

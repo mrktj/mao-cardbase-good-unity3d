@@ -2,6 +2,7 @@
 using System.Collections;
 
 public class Player : MonoBehaviour {
+  public int playerClass;
   public Deck _deck;
   public Hand _hand;
   public Pile _discard;
@@ -19,11 +20,19 @@ public class Player : MonoBehaviour {
   public int DefaultHealth = 20;
   public NetworkPlayer networkPlayer;
   public Player opponent;
+  public CardManager manager;
 
 	void OnEnable () {
     _health = DefaultHealth;
     _done = false;
 	}
+  
+  public void InitHand(int Class) {
+    playerClass = Class;
+    _hand.defaultCard = CardSet.classCards[playerClass];
+    _hand.numDefault = 1;
+    _hand.Setup();
+  }
 	
 	void Update () {
   }
@@ -32,12 +41,41 @@ public class Player : MonoBehaviour {
     networkView.RPC("NetworkEndTurn", RPCMode.All);
   }
 
+  public void Retake() {
+    _discard.DealCard(_hand);
+  }
+
   public IEnumerator NewTurn() {
     networkView.RPC("NetworkNewTurn", RPCMode.All);
-    _table.ClearInto(_discard);
-    _hand.ClearInto(_discard);
+    int count = _table.slots.Count;
+    for (int i = 0; i < count; i++) {
+      GameObject discarded = _table.slots[0];
+      Card discardedCard = CardSet.GetCard(discarded.GetComponent<ImageAnimator>().cardValue);
+      Group.MoveDisplaySlot(discarded, _table, _discard);
+      discardedCard.OnDiscardEffects(this, opponent);
+    }
+    count = _hand.slots.Count;
+    for (int i = 0; i < count; i++) {
+      GameObject discarded = _hand.slots[0];
+      Card discardedCard = CardSet.GetCard(discarded.GetComponent<ImageAnimator>().cardValue);
+      Group.MoveDisplaySlot(discarded, _hand, _discard);
+      discardedCard.OnDiscardEffects(this, opponent);
+    }
     yield return new WaitForSeconds(ImageAnimator.moveTime * 2);
     Draw(DefaultHandSize);
+  }
+
+  public void TrashCard(int cardValue) {
+    if (cardValue < 0) {
+      int count = _table.slots.Count;
+      GameObject trash = _table.slots[count - 1];
+      _table.PlayCard(trash, manager.trash);
+    }
+  }
+
+  public void GiveNew(int cardValue) {
+    Pile p = manager.GetPileFor(cardValue);
+    p.DealCard(opponent._discard);
   }
 
   public void TryPlayCard(GameObject dc) {
@@ -45,7 +83,7 @@ public class Player : MonoBehaviour {
     if (played.useCost > energy) return;
     UseEnergy(played.useCost);
     _hand.PlayCard(dc, _table);
-    played.ApplyCardEffects(this, opponent);
+    played.OnPlayEffects(this, opponent);
   }
 
   public void GainEnergy(int val) {

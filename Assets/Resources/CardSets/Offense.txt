@@ -5,8 +5,8 @@
 		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>
-				<Value>1</Value>
 				<Type>ENERGY</Type>
+				<Value>1</Value>
 			</Effect>
 		</Effects>
 	</Card>
@@ -16,8 +16,8 @@
 		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>
-				<Value>2</Value>
 				<Type>ENERGY</Type>
+				<Value>2</Value>
 			</Effect>
 		</Effects>
 	</Card>
@@ -27,8 +27,8 @@
 		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>
-				<Value>3</Value>
 				<Type>ENERGY</Type>
+				<Value>3</Value>
 			</Effect>
 		</Effects>
 	</Card>
@@ -38,8 +38,8 @@
 		<UseCost>1</UseCost>
 		<Effects>
 			<Effect>
-				<Value>1</Value>
 				<Type>ATTACK</Type>
+				<Value>1</Value>
 			</Effect>
 		</Effects>
 	</Card>
@@ -49,8 +49,8 @@
 		<UseCost>1</UseCost>
 		<Effects>
 			<Effect>
-				<Value>2</Value>
 				<Type>ATTACK</Type>
+				<Value>2</Value>
 			</Effect>
 		</Effects>
 	</Card>
@@ -60,8 +60,8 @@
 		<UseCost>1</UseCost>
 		<Effects>
 			<Effect>
-				<Value>3</Value>
 				<Type>ATTACK</Type>
+				<Value>3</Value>
 			</Effect>
 		</Effects>
 	</Card>
@@ -70,5 +70,76 @@
 		<BuyCost>0</BuyCost>
 		<UseCost>0</UseCost>
 		<Effects />
+	</Card>
+	<Card>
+		<Name>Poison</Name>
+		<BuyCost>0</BuyCost>
+		<UseCost>0</UseCost>
+		<Effects>
+			<Effect>
+				<Type>HEALTH</Type>
+				<Value>-1</Value>
+			</Effect>
+			<Effect>
+				<Type>TRASH</Type>
+				<Value>-1</Value>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Assassins Shiv</Name>
+		<BuyCost>0</BuyCost>
+		<UseCost>2</UseCost>
+		<Effects>
+			<Effect>
+				<Type>GIVE</Type>
+				<Value>7</Value>
+			</Effect>
+			<Effect>
+				<Type>RETURN</Type>
+				<Value>0</Value>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Shock</Name>
+		<BuyCost>0</BuyCost>
+		<UseCost>1</UseCost>
+		<Effects>
+			<Effect>
+				<Type>TRASH</Type>
+				<Value>-1</Value>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Lightning Bolt</Name>
+		<BuyCost>0</BuyCost>
+		<UseCost>2</UseCost>
+		<Effects>
+			<Effect>
+				<Type>GIVE</Type>
+				<Value>9</Value>
+			</Effect>
+			<Effect>
+				<Type>RETURN</Type>
+				<Value>0</Value>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Heal</Name>
+		<BuyCost>0</BuyCost>
+		<UseCost>4</UseCost>
+		<Effects>
+			<Effect>
+				<Type>HEALTH</Type>
+				<Value>1</Value>
+			</Effect>
+			<Effect>
+				<Type>RETURN</Type>
+				<Value>0</Value>
+			</Effect>
+		</Effects>
 	</Card>
 </CardSet>

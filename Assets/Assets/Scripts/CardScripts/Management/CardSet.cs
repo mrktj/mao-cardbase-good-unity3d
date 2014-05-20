@@ -15,9 +15,16 @@ public static class CardSet {
   [SerializeField]
   private static List<Card> _cards; // A list of Cards
   public static List<Card> cards { get { return _cards; }}
+
+  private static string[] _names;
+  public static string[] names { get { return _names; }}
+  private static string[] _choiceNames;
+  public static string[] choiceNames { get { return _choiceNames; }}
   
   private static bool _initialized = false; // Whether the set has been loaded
   public static bool initialized { get { return _initialized; }}
+
+  public static int[] classCards = new int[] {8, 10, 11};
 
 #endregion
 #region Static Methods
@@ -45,25 +52,33 @@ public static class CardSet {
       XmlNodeList xmlEffects = c.SelectSingleNode("Effects").ChildNodes;
       CardEffect[] effects = new CardEffect[xmlEffects.Count];
       for (int i = 0; i < xmlEffects.Count; i++) {
-        int val = Int32.Parse(xmlEffects[i].SelectSingleNode("Value").InnerText);
         EffectType type = ParseEnum<EffectType>(xmlEffects[i].SelectSingleNode("Type").InnerText);
-        effects[i] = new CardEffect(val, type);
+        EffectData data = Int32.Parse(xmlEffects[i].SelectSingleNode("Value").InnerText);
+        effects[i] = new CardEffect(data, type);
       }
       _cards.Add(new Card(name, buyCost, useCost, cards.Count, effects));
     }
     _initialized = true;
+
+    _choiceNames = new string[cards.Count + 1];
+    _choiceNames[0] = "This";
+    _names = new string[cards.Count];
+    for (int i = 0; i < cards.Count; i ++) {
+      _names[i] = cards[i].name;
+      _choiceNames[i + 1] = cards[i].name;
+    }
   }
 
   /**
    * Get the Card with cardValue IDX 
    */
   public static Card GetCard(int idx) {
-    if (!initialized) {
+    if (!initialized || idx < 0) {
       return null;
     }
     return cards[idx];
   }
-  
+
   /**
    * A function to parse a string into an enum
    */

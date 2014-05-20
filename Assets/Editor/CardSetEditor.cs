@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System;
+using System.Linq;
 
 /**
  * Editor to edit the CardSet files in a Unity Editor Window
@@ -100,6 +101,10 @@ public class CardSetEditor : EditorWindow {
           names[i] = EditorGUILayout.TextField("Name", names[i]);
           buy[i] = EditorGUILayout.IntField("Buy Cost", buy[i]);
           use[i] = EditorGUILayout.IntField("Use Cost", use[i]);
+          // Display Card Text
+          string fulltext = "";
+          if (i < CardSet.cards.Count) fulltext = CardSet.GetCard(i).fullText;
+          EditorGUILayout.LabelField(fulltext, GUILayout.Height(fulltext.Split('\n').Length * 16.0f));
 
           // Display buttons for adding and removing effects
           GUILayout.BeginHorizontal();
@@ -128,14 +133,21 @@ public class CardSetEditor : EditorWindow {
             for (int j = 0; j < effects[i].Count; j++) {
               GUILayout.BeginHorizontal();
               Rect off = new Rect(EditorGUILayout.GetControlRect());
-              EditorGUI.LabelField(off, "+");
-              off.x += 45;
+              off.width = 110;
               effects[i][j].type = (EffectType) 
                 EditorGUI.EnumPopup(off, effects[i][j].type, popstyle);
-              off.x -= 30;
-              effects[i][j].val = 
-                EditorGUI.IntField(off, effects[i][j].val, numstyle);
-              off.x -= 15;
+              if (effects[i][j].generalType == GeneralType.BASIC) {
+                off.x += 80;
+                effects[i][j].data.num = 
+                  EditorGUI.IntField(off, effects[i][j].data.num, numstyle);
+              }
+              else if (effects[i][j].generalType == GeneralType.CARDMOD) {
+                off.x += 80;
+                effects[i][j].data.cardValue = 
+                  EditorGUI.IntPopup(off, effects[i][j].data.num, 
+                      CardSet.choiceNames, 
+                      Enumerable.Range(-1, CardSet.cards.Count + 1).ToArray());
+              }
               GUILayout.EndHorizontal();
             }
             EditorGUI.indentLevel--;
@@ -168,8 +180,8 @@ public class CardSetEditor : EditorWindow {
         writer.WriteStartElement("Effects");
         for (int j = 0; j < effects[i].Count; j++) {
           writer.WriteStartElement("Effect");
-          writer.WriteElementString("Value", effects[i][j].val.ToString());
           writer.WriteElementString("Type", effects[i][j].type.ToString());
+          writer.WriteElementString("Value", effects[i][j].data.num.ToString());
           writer.WriteEndElement();
         }
         writer.WriteEndElement();
