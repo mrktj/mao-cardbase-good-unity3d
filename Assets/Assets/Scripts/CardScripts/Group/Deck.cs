@@ -24,6 +24,24 @@ public class Deck : Group {
 	void Update () {
   }
 
+  protected override GameObject SendSlot(int idx) {
+    return NewDisplaySlot(group[idx]);
+  }
+
+  protected override void ReceiveSlot(GameObject obj) {
+    NetworkViewID netIdx = obj.GetComponent<NetworkView>().viewID;
+    networkView.RPC("NetworkReceiveSlot", RPCMode.All, netIdx);
+    networkView.RPC("NetworkTranslateDestroy", RPCMode.All, obj.networkView.viewID, Vector3.zero);
+  }
+
+  [RPC]
+  private void NetworkReceiveSlot(NetworkViewID id) {
+    GameObject obj = NetworkView.Find(id).observed.gameObject;
+    obj.transform.parent = this.gameObject.transform;
+    obj.layer = this.gameObject.layer;
+    obj.GetComponent<ImageAnimator>().Revert();
+  }
+
   [RPC]
   private void NetworkSetTop(NetworkViewID id) {
     top = NetworkView.Find(id).observed.gameObject.GetComponent<ImageAnimator>();
@@ -39,16 +57,9 @@ public class Deck : Group {
     }
 	}
 
-  protected override void SendSlot(GameObject obj) {
-    return;
-  }
-
-  public bool DealCard(Group g) {
-    if (group.Count <= 0) return false;
-    int randomCard = group.ElementAt(random.Next(group.Count)); 
-    Group.MoveDisplaySlot(NewDisplaySlot(randomCard), this, g);
+  public void DealCard(Group g) {
+    Group.MoveDisplaySlot(random.Next(group.Count), this, g);
     UpdateSprite();
     g.UpdateSprite();
-    return true;
   }
 }

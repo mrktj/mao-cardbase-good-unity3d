@@ -41,12 +41,15 @@ public class Player : MonoBehaviour {
     networkView.RPC("NetworkEndTurn", RPCMode.All);
   }
 
-  public void Retake() {
-    _discard.DealCard(_hand);
+
+  public void ResetTurn() {
+    networkView.RPC("NetworkNewTurn", RPCMode.All);
   }
 
   public IEnumerator NewTurn() {
-    networkView.RPC("NetworkNewTurn", RPCMode.All);
+    _table.ClearInto(_discard);
+    _hand.ClearInto(_discard);
+    /*
     int count = _table.slots.Count;
     for (int i = 0; i < count; i++) {
       GameObject discarded = _table.slots[0];
@@ -54,6 +57,7 @@ public class Player : MonoBehaviour {
       Group.MoveDisplaySlot(discarded, _table, _discard);
       discardedCard.OnDiscardEffects(this, opponent);
     }
+    
     count = _hand.slots.Count;
     for (int i = 0; i < count; i++) {
       GameObject discarded = _hand.slots[0];
@@ -61,6 +65,8 @@ public class Player : MonoBehaviour {
       Group.MoveDisplaySlot(discarded, _hand, _discard);
       discardedCard.OnDiscardEffects(this, opponent);
     }
+    */
+    _discard.ReturnTo(_hand);
     yield return new WaitForSeconds(ImageAnimator.moveTime * 2);
     Draw(DefaultHandSize);
   }
@@ -75,6 +81,9 @@ public class Player : MonoBehaviour {
 
   public void GiveNew(int cardValue) {
     Pile p = manager.GetPileFor(cardValue);
+    if (p.isEmpty) {
+      return;
+    }
     p.DealCard(opponent._discard);
   }
 
@@ -119,14 +128,17 @@ public class Player : MonoBehaviour {
   }
 
   public void DrawCard() {
-    if (_deck.group.Count <= 0) {
+    if (_deck.isEmpty) {
       _discard.ShuffleInto(_deck);
+    }
+    if (_deck.isEmpty) {
+      Debug.Log("empty after shuffle");
     }
     _deck.DealCard(_hand);
   }
   
   public void TryGainCard(Pile p) {
-    if (p.numDefault <= 0) return;
+    if (p.isEmpty) return;
     Card pileCard = CardSet.GetCard(p.defaultCard);
     if (pileCard.buyCost > energy) return;
     UseEnergy(pileCard.buyCost);
@@ -134,6 +146,9 @@ public class Player : MonoBehaviour {
   }
 
   public void GainCard(Pile p) {
+    if (p.isEmpty) {
+      return;
+    }
     p.DealCard(_discard);
   }
 
@@ -174,5 +189,4 @@ public class Player : MonoBehaviour {
     _energy = 0;
     _attack = 0;
   }
-
 }

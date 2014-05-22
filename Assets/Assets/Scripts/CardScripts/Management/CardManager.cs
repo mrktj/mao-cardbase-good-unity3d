@@ -102,25 +102,22 @@ public class CardManager : MonoBehaviour {
           GUI.Button(new Rect(Screen.width - 130, 10, 120, 20), "End Turn")){ 
         players[playerNumber].EndTurn();
       }
-    }
-    if (gameStart) {
 
-      // Check to see if both players have ended their turn
-      bool end = true;
-      foreach (Player p in players) {
-        if (p.done == false) {
-          end = false;
-          break;
-        }
-      }
       // Apply damage and start a new turn 
-      if (end == true) {
+      if (players[0].done) {
         if (players.Length == 2) {
-        players[0].TakeDamage(players[1].attack - players[0].attack);
-        players[1].TakeDamage(players[0].attack - players[1].attack);
+          if (players[1].done) {
+            players[0].TakeDamage(players[1].attack - players[0].attack);
+            players[1].TakeDamage(players[0].attack - players[1].attack);
+            players[0].ResetTurn();
+            players[1].ResetTurn();
+            StartCoroutine(players[0].NewTurn());
+            StartCoroutine(players[1].NewTurn());
+          }
         }
-        foreach (Player p in players) {
-          StartCoroutine(p.NewTurn());
+        else {
+          players[0].ResetTurn();
+          StartCoroutine(players[0].NewTurn());
         }
       }
     }

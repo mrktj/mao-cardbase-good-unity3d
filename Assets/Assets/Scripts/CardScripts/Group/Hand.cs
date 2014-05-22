@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 
 /**
- * A Hand is a Group where all the Cards are only visible to one Player
- * If player is null, then the hand is open and all cards are visible
+ * A Hand is a Group where all the group are only visible to one Player
+ * If player is null, then the hand is open and all group are visible
  */
 public class Hand : Group {
-  private List<GameObject> _slots; // A List of DisplaySlots to display Cards
+  private List<GameObject> _slots; // A List of DisplaySlots to display group
   public List<GameObject> slots { get { return _slots;} } 
-  public List<int> cards { get { return (List<int>) group; } }
   //public GameObject displayCardPrefab; // The DisplaySlot prefab
   public Player player; // the Player this hand belongs to
   
@@ -35,27 +35,34 @@ public class Hand : Group {
 
   public void InitSlots() {
     for (int i = 0; i < _group.Count; i++) {
-      ReceiveSlot(NewDisplaySlot(cards[i]));
+      ReceiveSlot(NewDisplaySlot(group[i]));
     }
   }
 	
   /**
-   * Clear the Hand and place all Cards into Group G
+   * Clear the Hand and place all group into Group G
    */
-  public bool ClearInto(Group g) {
+  public void ClearInto(Group g) {
     while (slots.Count > 0) {
-      MoveDisplaySlot(slots[0], this, g);
+      MoveDisplaySlot(0, this, g);
     }
     //ShuffleInto(g);
-    return true;
   }
-
+  
   /**
    * Play the Card shown in DisplaySlot obj into Group G
    */
-  public bool PlayCard(GameObject obj, Group g) {
-    MoveDisplaySlot(obj, this, g);
-    return true;
+  public void PlayCard(GameObject go, Group g) {
+    int idx = -1;
+    for (int i = 0; i < slots.Count; i++ ) {
+      if (slots[i] == go) {
+        idx = i;
+      }
+    }
+    if (idx == -1) {
+      throw new System.ArgumentException("GameObject not in hand", "go");
+    }
+    MoveDisplaySlot(idx, this, g);
   }
 
   /**
@@ -67,14 +74,10 @@ public class Hand : Group {
     return false;
   }
 
-  [RPC]
-  private void NetworkClearHand() {
-    slots.Clear();
-  }
-
-  protected override void SendSlot(GameObject obj) {
-    int idx = _slots.IndexOf(obj);
+  protected override GameObject SendSlot(int idx) {
+    GameObject obj = slots[idx];
     networkView.RPC("NetworkSendSlot", RPCMode.All, idx);
+    return obj;
   }
 
   [RPC]
@@ -102,10 +105,26 @@ public class Hand : Group {
     for (int i = 0; i < slots.Count; i++) {
       networkView.RPC("NetworkTranslateSlot", RPCMode.All, 
           _slots[i].networkView.viewID, new Vector3(-8 + i*1.5f, 0, 0));
-      if (player == null || Network.player == player.networkPlayer)
-        slots[i].GetComponent<ImageAnimator>().DrawCard(cards[i]);
-      else 
+      if (player == null || Network.player == player.networkPlayer) {
+        slots[i].GetComponent<ImageAnimator>().DrawCard(group[i]);
+        if (player == null) {
+          slots[i].GetComponent<ImageAnimator>().SetParticles(false);
+        }
+        else { 
+          Card c = CardSet.GetCard(group[i]);
+          if (c.useCost == 0) {
+            foreach (CardEffect ce in c.effects) {
+              if (ce.type == EffectType.ENERGY) {
+                slots[i].GetComponent<ImageAnimator>().SetParticles(true);
+                break;
+              }
+            }
+          }
+        }
+      }
+      else {
         slots[i].GetComponent<ImageAnimator>().DrawBack();
+      }
     }
   }
 

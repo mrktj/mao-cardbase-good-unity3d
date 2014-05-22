@@ -13,8 +13,8 @@ public abstract class Group : MonoBehaviour {
 #region Protected Variables and Accessors
 
   [SerializeField]
-  protected ICollection<int> _group; // The Collection of cardValues
-  public ICollection<int> group { 
+  protected List<int> _group; // The Collection of cardValues
+  public List<int> group { 
     get { 
       return _group;
     } 
@@ -29,6 +29,8 @@ public abstract class Group : MonoBehaviour {
   [SerializeField]
   public int numDefault;  // The number of default Cards to start with
   public GameObject displayCardPrefab;
+  public bool isEmpty   {get { return (group.Count <= 0);}}
+  public int numCards  {get { return group.Count;}}
 
 #endregion 
 #region Protected Methods
@@ -51,6 +53,10 @@ public abstract class Group : MonoBehaviour {
   /* Remove the Card with cardValue i from the group */
   private void Remove(int i) {
     networkView.RPC("NetworkRemove", RPCMode.All, i);
+  }
+
+  private void RemoveAt(int idx) {
+    networkView.RPC("NetworkRemoveAt", RPCMode.All, idx);
   }
 
   protected GameObject NewDisplaySlot(int cardValue) {
@@ -85,15 +91,16 @@ public abstract class Group : MonoBehaviour {
 #region Static Methods
 
   /* Move the Card with cardValue i in Group FROM to Group TO */
-  public static void MoveCard(int i, Group from, Group to) {
-    from.Remove(i);
-    to.Add(i);
+  public static void MoveCard(int idx, Group from, Group to) {
+    int cardVal = from.group[idx];
+    from.RemoveAt(idx);
+    to.Add(cardVal);
   }
   
-  public static void MoveDisplaySlot(GameObject obj, Group from, Group to) {
-    from.SendSlot(obj);
+  public static void MoveDisplaySlot(int idx, Group from, Group to) {
+    GameObject obj = from.SendSlot(idx);
     to.ReceiveSlot(obj);
-    Group.MoveCard(obj.GetComponent<ImageAnimator>().cardValue, from, to);
+    Group.MoveCard(idx, from, to);
     from.UpdateSprite();
     to.UpdateSprite();
   }
@@ -109,6 +116,11 @@ public abstract class Group : MonoBehaviour {
   [RPC]
   private void NetworkRemove(int cardval) {
     group.Remove(cardval);
+  }
+
+  [RPC]
+  private void NetworkRemoveAt(int idx) {
+    group.RemoveAt(idx);
   }
 
   [RPC]
@@ -142,7 +154,8 @@ public abstract class Group : MonoBehaviour {
 #endregion 
 #region Virtual Functions
   
-  protected virtual void SendSlot(GameObject obj) {
+  protected virtual GameObject SendSlot(int idx) {
+    return NewDisplaySlot(group[idx]);
   }
 
   protected virtual void ReceiveSlot(GameObject obj) {

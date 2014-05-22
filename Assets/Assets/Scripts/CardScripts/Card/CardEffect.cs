@@ -120,7 +120,6 @@ public class CardEffect {
   public void OnDiscard(Player player, Player opponent) {
     switch (type) {
       case EffectType.RETURN:
-        player.Retake();
         break;
       default:
         break;

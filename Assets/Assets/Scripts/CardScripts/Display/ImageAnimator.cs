@@ -3,20 +3,27 @@ using System.Collections;
 
 public class ImageAnimator : MonoBehaviour {
   public Animator animator;
+  public GameObject particles;
   public int _cardValue;
   public int cardValue { get { return _cardValue;} }
 
   public static float moveTime = 0.3f;
 
   public IEnumerator SmoothMove(Vector3 end, float time) {
-    float t = 0;
     Vector3 start = transform.localPosition;
+    float t0 = Time.time;
+    float t = Time.time - t0;
     while (t < time) {
+      t = Time.time - t0;
       transform.localPosition = Vector3.Lerp(start, end, t/time);
-      t += Time.deltaTime;
       yield return null;
     }
   }
+
+  public void SetParticles(bool b) {
+    particles.SetActive(b);
+  }
+
 
   public void MoveTo(Vector3 pos) {
     StartCoroutine(SmoothMove(pos, moveTime));

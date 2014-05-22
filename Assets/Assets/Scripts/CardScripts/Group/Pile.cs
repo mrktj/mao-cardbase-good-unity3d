@@ -3,12 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 
 /**
- * A Pile acts like a stack of Cards
+ * A group acts like a stack of Cards
  */
 [System.Serializable]
 public class Pile : Group {
-  public List<int> pile { get { return (List<int>) group; } }
-  public ImageAnimator top; // A DisplaySlot at the top of the Pile
+  public ImageAnimator top; // A DisplaySlot at the top of the group
 
 	void OnEnable () {
     _group = new List<int>();
@@ -23,6 +22,21 @@ public class Pile : Group {
 	void Update () {
   }
 
+  public void ReturnTo(Group g) {
+    for (int i = 0; i < group.Count; i++) {
+      Card c = CardSet.GetCard(group[i]);
+      foreach (CardEffect ce in c.effects) {
+        if (ce.type == EffectType.RETURN) {
+          Group.MoveDisplaySlot(i, this, g);
+          UpdateSprite();
+          g.UpdateSprite();
+          ReturnTo(g);
+          break;
+        }
+      }
+    }
+  }
+
   [RPC]
   private void NetworkSetTop(NetworkViewID id) {
     top = NetworkView.Find(id).observed.gameObject.GetComponent<ImageAnimator>();
@@ -30,14 +44,18 @@ public class Pile : Group {
 
   [RPC]
 	protected override void NetworkUpdateSprite () {
-    if (pile.Count <= 0) {
+    if (group.Count <= 0) {
       top.DrawBlank();
     }
     else { 
-      int cardValue = pile[pile.Count - 1];
+      int cardValue = group[group.Count - 1];
       top.DrawCard(cardValue);
     }
 	}
+  
+  protected override GameObject SendSlot(int idx) {
+    return NewDisplaySlot(group[idx]);
+  }
 
   protected override void ReceiveSlot(GameObject obj) {
     NetworkViewID netIdx = obj.GetComponent<NetworkView>().viewID;
@@ -53,11 +71,11 @@ public class Pile : Group {
     obj.GetComponent<ImageAnimator>().Revert();
   }
 
-  public bool DealCard(Group g) { 
-    if (pile.Count <= 0) return false;
-    Group.MoveDisplaySlot(NewDisplaySlot(pile[pile.Count - 1]), this, g);
+
+
+  public void DealCard(Group g) { 
+    Group.MoveDisplaySlot(group.Count - 1, this, g);
     UpdateSprite();
     g.UpdateSprite();
-    return true;
   }
 }
