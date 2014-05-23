@@ -19,6 +19,13 @@ public class Pile : Group {
     }
 	}
 
+  public void Setup() {
+    if (Network.isServer) {
+      Init();
+      UpdateSprite();
+    }
+  }
+
 	void Update () {
   }
 

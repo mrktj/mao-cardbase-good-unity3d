@@ -1,7 +1,7 @@
 ﻿<CardSet>
 	<Card>
 		<Name>Lethargy</Name>
-		<BuyCost>1</BuyCost>
+		<BuyCost>0</BuyCost>
 		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>
@@ -23,7 +23,7 @@
 	</Card>
 	<Card>
 		<Name>Vigor</Name>
-		<BuyCost>5</BuyCost>
+		<BuyCost>6</BuyCost>
 		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>
@@ -34,7 +34,7 @@
 	</Card>
 	<Card>
 		<Name>Dagger</Name>
-		<BuyCost>3</BuyCost>
+		<BuyCost>2</BuyCost>
 		<UseCost>1</UseCost>
 		<Effects>
 			<Effect>
@@ -45,7 +45,7 @@
 	</Card>
 	<Card>
 		<Name>Sword</Name>
-		<BuyCost>6</BuyCost>
+		<BuyCost>5</BuyCost>
 		<UseCost>1</UseCost>
 		<Effects>
 			<Effect>
@@ -56,7 +56,7 @@
 	</Card>
 	<Card>
 		<Name>Axe</Name>
-		<BuyCost>9</BuyCost>
+		<BuyCost>8</BuyCost>
 		<UseCost>1</UseCost>
 		<Effects>
 			<Effect>
@@ -115,7 +115,7 @@
 	<Card>
 		<Name>Lightning Bolt</Name>
 		<BuyCost>0</BuyCost>
-		<UseCost>2</UseCost>
+		<UseCost>1</UseCost>
 		<Effects>
 			<Effect>
 				<Type>GIVE</Type>
@@ -128,17 +128,62 @@
 		</Effects>
 	</Card>
 	<Card>
-		<Name>Heal</Name>
+		<Name>Health Orb</Name>
 		<BuyCost>0</BuyCost>
-		<UseCost>4</UseCost>
+		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>
 				<Type>HEALTH</Type>
 				<Value>1</Value>
 			</Effect>
 			<Effect>
+				<Type>CARD</Type>
+				<Value>1</Value>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Heal</Name>
+		<BuyCost>0</BuyCost>
+		<UseCost>3</UseCost>
+		<Effects>
+			<Effect>
+				<Type>GAIN</Type>
+				<Value>11</Value>
+			</Effect>
+			<Effect>
 				<Type>RETURN</Type>
 				<Value>0</Value>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Shuriken</Name>
+		<BuyCost>6</BuyCost>
+		<UseCost>0</UseCost>
+		<Effects>
+			<Effect>
+				<Type>ATTACK</Type>
+				<Value>1</Value>
+			</Effect>
+			<Effect>
+				<Type>CARD</Type>
+				<Value>1</Value>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Dash</Name>
+		<BuyCost>5</BuyCost>
+		<UseCost>0</UseCost>
+		<Effects>
+			<Effect>
+				<Type>ENERGY</Type>
+				<Value>1</Value>
+			</Effect>
+			<Effect>
+				<Type>CARD</Type>
+				<Value>2</Value>
 			</Effect>
 		</Effects>
 	</Card>

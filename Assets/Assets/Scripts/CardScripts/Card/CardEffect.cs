@@ -103,6 +103,8 @@ public class CardEffect {
         break;
 
       case EffectType.GAIN:
+        player.GetNew(data.cardValue);
+        break;
       case EffectType.GIVE:
         player.GiveNew(data.cardValue);
         break;

@@ -16,5 +16,7 @@ public class PlayerUI : MonoBehaviour {
     AttackUI.text = player.attack.ToString();
     DeckUI.text = player._deck.numCards.ToString();
     DiscardUI.text = player._discard.numCards.ToString();
+    DeckUI.transform.rotation = Quaternion.identity;
+    DiscardUI.transform.rotation = Quaternion.identity;
 	}
 }

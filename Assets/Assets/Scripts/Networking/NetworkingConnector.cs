@@ -7,7 +7,7 @@ public class NetworkingConnector : MonoBehaviour {
 
   void OnGUI() {
     if (Network.peerType == NetworkPeerType.Disconnected) {
-      connectionIP = GUI.TextField(new Rect(130, 30, 240, 20), connectionIP);
+      connectionIP = GUI.TextField(new Rect(130, 10, 240, 20), connectionIP);
       if (GUI.Button(new Rect(10, 10, 120, 20), "Client Connect")) {
         Network.Connect(connectionIP, connectionPort);
       }
@@ -18,12 +18,14 @@ public class NetworkingConnector : MonoBehaviour {
     else if (Network.isClient) {
       if (GUI.Button(new Rect(10, 10, 120, 20), "Disconnect")) {
         Network.Disconnect(200);
+        Application.LoadLevel(Application.loadedLevel);
       }
     }
     else if (Network.isServer) {
       GUI.Label(new Rect(10, 30, 300, 20), "Status: Server - " + Network.connections.Length + " connected");
       if (GUI.Button(new Rect(10, 10, 120, 20), "Disconnect")) {
-          Network.Disconnect(200);
+        Network.Disconnect(200);
+        Application.LoadLevel(Application.loadedLevel);
       }
     }
   }

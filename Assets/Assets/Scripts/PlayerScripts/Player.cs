@@ -79,8 +79,16 @@ public class Player : MonoBehaviour {
     }
   }
 
+  public void GetNew(int cardValue) {
+    Pile p = manager.GetPileFor(cardValue, this);
+    if (p.isEmpty) {
+      return;
+    }
+    p.DealCard(_discard);
+  }
+
   public void GiveNew(int cardValue) {
-    Pile p = manager.GetPileFor(cardValue);
+    Pile p = manager.GetPileFor(cardValue, this);
     if (p.isEmpty) {
       return;
     }

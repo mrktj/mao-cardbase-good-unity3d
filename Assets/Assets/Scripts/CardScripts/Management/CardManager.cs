@@ -2,18 +2,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 /**
  * The main manager Class
  */
 public class CardManager : MonoBehaviour {
   public Player[] players;
-  public List<Pile> piles;
   public Pile trash; 
   public Player playerPrefab;
   public GameObject defaultPiles;
+  public GameObject extraPiles;
 
+  private List<Pile> piles;
   public int numPiles { get { return piles.Count; } }
+  private Pile[] tokenPiles = new Pile[2];
   private int numPlayers = 2;
   private bool gameStart = false; 
   private int playerNumber = -1;
@@ -21,7 +24,18 @@ public class CardManager : MonoBehaviour {
   private float lastHover = 0; 
   private int[] classes = new int[2];
   private int gridInt = 0;
+  private List<int> extraCards;
+  private List<bool> nameToggles;
 
+
+  void OnEnable() {
+    extraCards = new List<int>();
+    nameToggles = new List<bool>();
+    for (int i = 13; i < CardSet.cards.Count; i++) {
+      extraCards.Add(i);
+      nameToggles.Add(false);
+    }
+  }
 
   /**
    * The main loop
@@ -81,6 +95,11 @@ public class CardManager : MonoBehaviour {
     classes[pnum] = val;
   }
 
+  [RPC]
+  public void NetworkToggle(int idx, bool val) {
+    nameToggles[idx] = val;
+  }
+
   void OnGUI() {
     if (!gameStart && (Network.isServer || Network.isClient)) {
       gridInt = GUI.SelectionGrid(new Rect(Screen.width/2, Screen.height/2, 100, 80), 
@@ -93,6 +112,14 @@ public class CardManager : MonoBehaviour {
         GameInit();
         foreach (Player p in players) {
           StartCoroutine(p.NewTurn());
+        }
+      }
+      for (int i = 0; i < nameToggles.Count; i++) {
+        int count = nameToggles.Count(item => item == true);
+        if (count <= 9) {
+          nameToggles[i] = GUI.Toggle(new Rect(10, Screen.height/3 + 15 * i, 100, 15),
+              nameToggles[i], CardSet.names[extraCards[i]]);
+          networkView.RPC("NetworkToggle", RPCMode.Others, i, nameToggles[i]);
         }
       }
     }
@@ -145,14 +172,24 @@ public class CardManager : MonoBehaviour {
 
     GameObject defaults = (GameObject) 
       Network.Instantiate(defaultPiles, new Vector3(0, 0, 0), Quaternion.identity, 0);
+    GameObject extras = (GameObject) 
+      Network.Instantiate(extraPiles, new Vector3(0, 0, 0), Quaternion.identity, 0);
     gameStart = true;
 
-    networkView.RPC("Post", RPCMode.All, defaults.networkView.viewID);
+    networkView.RPC("Post", RPCMode.All, defaults.networkView.viewID, extras.networkView.viewID);
     // Swap the positions of the players so that you're always on the bottom
     networkView.RPC("Swap", RPCMode.Others);
   }
 
-  public Pile GetPileFor(int cardValue) {
+  public Pile GetPileFor(int cardValue, Player player = null) {
+    if (player != null) {
+      if (player == players[0]) {
+        if (tokenPiles[0].defaultCard == cardValue) return tokenPiles[0];
+      }
+      else if (player == players[1]) {
+        if (tokenPiles[1].defaultCard == cardValue) return tokenPiles[1];
+      }
+    }
     foreach (Pile p in piles) {
       if (p.defaultCard == cardValue) return p;
     }
@@ -174,7 +211,7 @@ public class CardManager : MonoBehaviour {
   }
 
   [RPC]
-  private void Post(NetworkViewID id) {
+  private void Post(NetworkViewID id, NetworkViewID extraID) {
     players[0].InitHand(classes[0]);
     if (players.Length == 2) {
       players[0].opponent = players[1];
@@ -183,8 +220,35 @@ public class CardManager : MonoBehaviour {
     }
 
     Pile[] defaults = NetworkView.Find(id).GetComponentsInChildren<Pile>();
+    Pile[] extras = NetworkView.Find(extraID).GetComponentsInChildren<Pile>();
     piles = new List<Pile>(defaults);
     piles.Add(trash);
+
+    int i = 0;
+    for (int j = 0; j < extraCards.Count; j++) {
+      Pile p = extras[i];
+      if (nameToggles[j] == true) {
+        p.defaultCard = extraCards[j];
+        p.numDefault = 10;
+        p.Setup();
+        i ++;
+      }
+      piles.Add(p);
+    }
+    foreach (Pile p in defaults) {
+      if (p.gameObject.name == "Class0") {
+        p.defaultCard = CardSet.classTokens[classes[0]];
+        p.numDefault = 20;
+        p.Setup();
+        tokenPiles[0] = p;
+      }
+      else if (p.gameObject.name == "Class1" && players.Length == 2) {
+        p.defaultCard = CardSet.classTokens[classes[1]];
+        p.numDefault = 20;
+        p.Setup();
+        tokenPiles[1] = p;
+      }
+    }
     gameStart = true;
   }
 
