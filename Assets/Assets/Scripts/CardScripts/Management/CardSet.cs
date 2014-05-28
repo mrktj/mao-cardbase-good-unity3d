@@ -24,8 +24,8 @@ public static class CardSet {
   private static bool _initialized = false; // Whether the set has been loaded
   public static bool initialized { get { return _initialized; }}
 
-  public static int[] classCards = new int[] {8, 10, 12};
-  public static int[] classTokens = new int[] {7, 9, 11};
+  public static int[] classCards = new int[] {7, 9, 11};
+  public static int[] classTokens = new int[] {6, 8, 10};
 
 #endregion
 #region Static Methods

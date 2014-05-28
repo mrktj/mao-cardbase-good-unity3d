@@ -66,12 +66,6 @@
 		</Effects>
 	</Card>
 	<Card>
-		<Name>Fatigue</Name>
-		<BuyCost>0</BuyCost>
-		<UseCost>0</UseCost>
-		<Effects />
-	</Card>
-	<Card>
 		<Name>Poison</Name>
 		<BuyCost>0</BuyCost>
 		<UseCost>0</UseCost>

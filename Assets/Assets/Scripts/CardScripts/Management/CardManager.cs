@@ -31,7 +31,7 @@ public class CardManager : MonoBehaviour {
   void OnEnable() {
     extraCards = new List<int>();
     nameToggles = new List<bool>();
-    for (int i = 13; i < CardSet.cards.Count; i++) {
+    for (int i = 12; i < CardSet.cards.Count; i++) {
       extraCards.Add(i);
       nameToggles.Add(false);
     }
