@@ -5,10 +5,21 @@ public class ImageAnimator : MonoBehaviour {
   public Animator animator;
   public GameObject particles;
   public GameObject buyCost;
+  public TextMesh[] texts;
+  public float fontScaling = 2f;
+
   public int _cardValue;
   public int cardValue { get { return _cardValue;} }
 
   public static float moveTime = 0.3f;
+  
+  void OnEnable() {
+    foreach (TextMesh t in texts) {
+      t.characterSize = t.characterSize * fontScaling;
+      t.fontSize = (int) (t.fontSize / fontScaling);
+    }
+  }
+
 
   public IEnumerator SmoothMove(Vector3 end, float time) {
     Vector3 start = transform.localPosition;
@@ -36,11 +47,19 @@ public class ImageAnimator : MonoBehaviour {
   public void MakeBig(bool inHand) {
     animator.SetBool("Big", true);
     animator.SetBool("Hand", true);
+    foreach (TextMesh t in texts) {
+      t.characterSize = t.characterSize / fontScaling;
+      t.fontSize = (int) (t.fontSize * fontScaling);
+    }
   }
 
   public void MakeSmall(bool inHand) {
     animator.SetBool("Big", false);
     animator.SetBool("Hand", true);
+    foreach (TextMesh t in texts) {
+      t.characterSize = t.characterSize * fontScaling;
+      t.fontSize = (int) (t.fontSize / fontScaling);
+    }
   }
 
   public void DrawBlank() {

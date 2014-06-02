@@ -8,6 +8,7 @@ using System.Collections.Generic;
 [System.Serializable]
 public class Pile : Group {
   public ImageAnimator top; // A DisplaySlot at the top of the group
+  public bool purchaseable = true;
 
 	void OnEnable () {
     _group = new List<int>();
@@ -56,7 +57,7 @@ public class Pile : Group {
     else { 
       int cardValue = group[group.Count - 1];
       top.DrawCard(cardValue);
-      top.GetComponent<ImageAnimator>().SetBuyCost(true);
+      if (purchaseable) top.GetComponent<ImageAnimator>().SetBuyCost(true);
     }
 	}
   

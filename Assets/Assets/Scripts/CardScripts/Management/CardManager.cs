@@ -80,7 +80,7 @@ public class CardManager : MonoBehaviour {
         // If a DisplaySlot in a Pile is clicked try to purchase it
         if (clicked.gameObject.layer == LayerMask.NameToLayer("Piles")) {
           Pile p = clicked.transform.parent.GetComponent<Pile>();
-          if (p != null) {
+          if (p != null && p.purchaseable) {
             players[playerNumber].TryGainCard(p);
           }
         }
