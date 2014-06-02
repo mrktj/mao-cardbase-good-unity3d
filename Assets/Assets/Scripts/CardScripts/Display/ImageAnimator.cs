@@ -4,6 +4,7 @@ using System.Collections;
 public class ImageAnimator : MonoBehaviour {
   public Animator animator;
   public GameObject particles;
+  public GameObject buyCost;
   public int _cardValue;
   public int cardValue { get { return _cardValue;} }
 
@@ -19,11 +20,14 @@ public class ImageAnimator : MonoBehaviour {
       yield return null;
     }
   }
+  
+  public void SetBuyCost(bool b) {
+    buyCost.SetActive(b);
+  }
 
   public void SetParticles(bool b) {
     particles.SetActive(b);
   }
-
 
   public void MoveTo(Vector3 pos) {
     StartCoroutine(SmoothMove(pos, moveTime));
@@ -31,20 +35,22 @@ public class ImageAnimator : MonoBehaviour {
 
   public void MakeBig(bool inHand) {
     animator.SetBool("Big", true);
-    if (inHand) animator.SetBool("Hand", inHand);
+    animator.SetBool("Hand", true);
   }
 
   public void MakeSmall(bool inHand) {
     animator.SetBool("Big", false);
-    if (inHand) animator.SetBool("Hand", inHand);
+    animator.SetBool("Hand", true);
   }
 
   public void DrawBlank() {
+    SetBuyCost(false);
     animator.SetBool("Back", false);
     animator.SetBool("Blank", true);
   }
 
   public void DrawBack() {
+    SetBuyCost(false);
     animator.SetBool("Blank", false);
     animator.SetBool("Back", true);
   }
@@ -55,6 +61,7 @@ public class ImageAnimator : MonoBehaviour {
 
   public void DrawCard(int val) {
     _cardValue = val;
+    SetBuyCost(false);
     animator.SetBool("Blank", false);
     animator.SetBool("Back", false);
     animator.SetTrigger("Revert");
@@ -66,7 +73,7 @@ public class ImageAnimator : MonoBehaviour {
   public void NetworkDrawCard(NetworkViewID ID, int idx) {
     GameObject image = NetworkView.Find(ID).observed.gameObject;
     Card card = CardSet.GetCard(idx);
-    foreach (TextMesh t in image.GetComponentsInChildren<TextMesh>()) {
+    foreach (TextMesh t in image.GetComponentsInChildren<TextMesh>(true)) {
       switch (t.gameObject.name) {
         case "BuyCost":
           t.text = card.buyCost.ToString();

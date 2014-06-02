@@ -54,19 +54,21 @@ public static class CardSet {
       CardEffect[] effects = new CardEffect[xmlEffects.Count];
       for (int i = 0; i < xmlEffects.Count; i++) {
         EffectType type = ParseEnum<EffectType>(xmlEffects[i].SelectSingleNode("Type").InnerText);
-        EffectData data = Int32.Parse(xmlEffects[i].SelectSingleNode("Value").InnerText);
+        EffectData data = new EffectData(Int32.Parse(xmlEffects[i].SelectSingleNode("Value").InnerText), 
+                                         Boolean.Parse(xmlEffects[i].SelectSingleNode("Opponent").InnerText));
         effects[i] = new CardEffect(data, type);
       }
       _cards.Add(new Card(name, buyCost, useCost, cards.Count, effects));
     }
     _initialized = true;
 
-    _choiceNames = new string[cards.Count + 1];
-    _choiceNames[0] = "This";
+    _choiceNames = new string[cards.Count + 2];
+    _choiceNames[0] = "Hand";
+    _choiceNames[1] = "This";
     _names = new string[cards.Count];
     for (int i = 0; i < cards.Count; i ++) {
       _names[i] = cards[i].name;
-      _choiceNames[i + 1] = cards[i].name;
+      _choiceNames[i + 2] = cards[i].name;
     }
   }
 

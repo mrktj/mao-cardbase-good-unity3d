@@ -112,7 +112,7 @@ public class CardSetEditor : EditorWindow {
               "Effects (" + effects[i].Count + ")");
           style.padding = new RectOffset(3, 0, 0, 2);
           if (GUILayout.Button("+", style)) {
-            effects[i].Add(new CardEffect(0, EffectType.ENERGY));
+            effects[i].Add(new CardEffect(new EffectData(0), EffectType.ENERGY));
           }
           style.padding = new RectOffset(5, 0, 0, 2);
           if (GUILayout.Button("-", style) && effects[i].Count > 0) {
@@ -136,17 +136,23 @@ public class CardSetEditor : EditorWindow {
               off.width = 110;
               effects[i][j].type = (EffectType) 
                 EditorGUI.EnumPopup(off, effects[i][j].type, popstyle);
+              off.x += 80;
+              if (effects[i][j].generalType != GeneralType.SPECIAL) {
+                off.width = 40;
+                effects[i][j].data.opponent = 
+                  EditorGUI.Toggle(off, effects[i][j].data.opponent);
+                off.x += 20;
+                off.width = 110;
+              }
               if (effects[i][j].generalType == GeneralType.BASIC) {
-                off.x += 80;
                 effects[i][j].data.num = 
                   EditorGUI.IntField(off, effects[i][j].data.num, numstyle);
               }
               else if (effects[i][j].generalType == GeneralType.CARDMOD) {
-                off.x += 80;
                 effects[i][j].data.cardValue = 
                   EditorGUI.IntPopup(off, effects[i][j].data.num, 
                       CardSet.choiceNames, 
-                      Enumerable.Range(-1, CardSet.cards.Count + 1).ToArray());
+                      Enumerable.Range(-2, CardSet.cards.Count + 1).ToArray());
               }
               GUILayout.EndHorizontal();
             }
@@ -182,6 +188,7 @@ public class CardSetEditor : EditorWindow {
           writer.WriteStartElement("Effect");
           writer.WriteElementString("Type", effects[i][j].type.ToString());
           writer.WriteElementString("Value", effects[i][j].data.num.ToString());
+          writer.WriteElementString("Opponent", effects[i][j].data.opponent.ToString());
           writer.WriteEndElement();
         }
         writer.WriteEndElement();

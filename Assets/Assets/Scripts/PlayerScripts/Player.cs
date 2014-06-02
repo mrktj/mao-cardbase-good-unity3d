@@ -86,13 +86,11 @@ public class Player : MonoBehaviour {
     }
     p.DealCard(_discard);
   }
-
-  public void GiveNew(int cardValue) {
-    Pile p = manager.GetPileFor(cardValue, this);
-    if (p.isEmpty) {
-      return;
+  
+  public void Discard(int numCards) {
+    if (numCards >= _hand.count) {
+      _hand.ClearInto(_discard);
     }
-    p.DealCard(opponent._discard);
   }
 
   public void TryPlayCard(GameObject dc) {
@@ -123,6 +121,7 @@ public class Player : MonoBehaviour {
     networkView.RPC("NetworkTakeDamage", RPCMode.All, val);
   }
 
+
   public void Heal(int val) {
     if (val <= 0) throw new System.ArgumentException("Parameter must be positive", "val");
     networkView.RPC("NetworkHeal", RPCMode.All, val);
@@ -140,7 +139,7 @@ public class Player : MonoBehaviour {
       _discard.ShuffleInto(_deck);
     }
     if (_deck.isEmpty) {
-      Debug.Log("empty after shuffle");
+      return;
     }
     _deck.DealCard(_hand);
   }

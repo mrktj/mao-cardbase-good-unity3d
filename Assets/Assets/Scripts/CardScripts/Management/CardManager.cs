@@ -117,7 +117,7 @@ public class CardManager : MonoBehaviour {
       for (int i = 0; i < nameToggles.Count; i++) {
         int count = nameToggles.Count(item => item == true);
         if (count <= 9) {
-          nameToggles[i] = GUI.Toggle(new Rect(10, Screen.height/3 + 15 * i, 100, 15),
+          nameToggles[i] = GUI.Toggle(new Rect(10, Screen.height/3 + 15 * i, 100, 17),
               nameToggles[i], CardSet.names[extraCards[i]]);
           networkView.RPC("NetworkToggle", RPCMode.Others, i, nameToggles[i]);
         }

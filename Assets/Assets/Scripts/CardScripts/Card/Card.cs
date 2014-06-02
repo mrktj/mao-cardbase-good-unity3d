@@ -82,6 +82,13 @@ public class Card {
     }
   }
 
+  public bool HasEffect(EffectType type) {
+    foreach (CardEffect ce in effects) {
+      if (ce.type == type) return true;
+    }
+    return false;
+  }
+
   public void OnDiscardEffects(Player player, Player opponent) {
     foreach (CardEffect ce in effects) {
       ce.OnDiscard(player, opponent);

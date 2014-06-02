@@ -18,8 +18,8 @@ public enum EffectType {
   HEALTH,
   CARD,
   GAIN,     // 4
-  GIVE,
   TRASH,
+  DISCARD,
   RETURN    // 7
 }
 
@@ -32,21 +32,26 @@ public enum GeneralType {
 
 [StructLayout(LayoutKind.Explicit)]
 public struct EffectData {
-  // BasicType Data
   [FieldOffset(0)]
+  public bool opponent;
+  // BasicType Data
+  [FieldOffset(1)]
   public int num;
 
   // CardType Data
-  [FieldOffset(0)]
+  [FieldOffset(1)]
   public int cardValue;
 
-  public static implicit operator EffectData(int i) {
-    return new EffectData() {num = i};
+  public EffectData(int i, bool b = false) {
+    this.opponent = b;
+    this.num = i;
+    this.cardValue = this.num;
   }
 
-  public static implicit operator EffectData(Card c) {
-    if (c == null) return new EffectData() {cardValue = -1};
-    return new EffectData() {cardValue = c.cardValue};
+  public EffectData(Card c, bool b = false) {
+    this.opponent = b;
+    this.cardValue = c.cardValue;
+    this.num = this.cardValue;
   }
 }
 
@@ -87,31 +92,33 @@ public class CardEffect {
    * Apply the CardEffectType to PLAYER based on the type and dataue
    */
   public void OnPlay(Player player, Player opponent) {
+    Player target = player;
+    if (data.opponent == true) target = opponent;
     switch (type) {
       case EffectType.ENERGY:
-        player.GainEnergy(data.num);
+        target.GainEnergy(data.num);
         break;
       case EffectType.ATTACK:
-        player.Attack(data.num);
+        target.Attack(data.num);
         break;
       case EffectType.HEALTH:
-        if (data.num > 0) player.Heal(data.num);
-        else if (data.num < 0) player.TakeDamage(-1 * data.num);
+        if (data.num > 0) target.Heal(data.num);
+        else if (data.num < 0) target.TakeDamage(-1 * data.num);
         break;
       case EffectType.CARD:
-        player.Draw(data.num);
+        target.Draw(data.num);
         break;
 
       case EffectType.GAIN:
-        player.GetNew(data.cardValue);
-        break;
-      case EffectType.GIVE:
-        player.GiveNew(data.cardValue);
+        target.GetNew(data.cardValue);
         break;
       case EffectType.TRASH:
-        if (data.cardValue < 0) player.TrashCard(-1);
+        if (data.cardValue == -1) target.TrashCard(-1);
         else {
         }
+        break;
+      case EffectType.DISCARD:
+        if (data.cardValue == -2) target.Discard(target._hand.count);
         break;
 
       default:
@@ -121,8 +128,6 @@ public class CardEffect {
 
   public void OnDiscard(Player player, Player opponent) {
     switch (type) {
-      case EffectType.RETURN:
-        break;
       default:
         break;
     }
@@ -138,16 +143,18 @@ public class CardEffect {
       output += data.num.ToString();
       output += " ";
       output += type.ToString();
+      if (data.opponent == true) output += " for Opponent";
       return output;
     }
     else if (generalType == GeneralType.CARDMOD) {
-      if (type == EffectType.GIVE) output += "Opponent GAINS";
-      else output += type.ToString();
+      if (data.opponent == true) output += "Opponent ";
+      output += type.ToString();
       if (data.cardValue >= 0) output += " " + CardSet.GetCard(data.cardValue).name;
-      else output += " this";
+      else if (data.cardValue == -2) output += " hand";
+      else if (data.cardValue == -1) output += " this";
     }
     else if (generalType == GeneralType.SPECIAL) {
-      if (type == EffectType.RETURN) output += "RETURN to hand on discard";
+      if (type == EffectType.RETURN) output += "RETURN to hand every turn";
     }
     return output;
   }

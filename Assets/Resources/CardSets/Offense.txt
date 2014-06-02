@@ -7,6 +7,7 @@
 			<Effect>
 				<Type>ENERGY</Type>
 				<Value>1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -18,6 +19,7 @@
 			<Effect>
 				<Type>ENERGY</Type>
 				<Value>2</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -29,6 +31,7 @@
 			<Effect>
 				<Type>ENERGY</Type>
 				<Value>3</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -40,6 +43,7 @@
 			<Effect>
 				<Type>ATTACK</Type>
 				<Value>1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -51,6 +55,7 @@
 			<Effect>
 				<Type>ATTACK</Type>
 				<Value>2</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -62,6 +67,7 @@
 			<Effect>
 				<Type>ATTACK</Type>
 				<Value>3</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -73,10 +79,12 @@
 			<Effect>
 				<Type>HEALTH</Type>
 				<Value>-1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>TRASH</Type>
 				<Value>-1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -86,12 +94,14 @@
 		<UseCost>2</UseCost>
 		<Effects>
 			<Effect>
-				<Type>GIVE</Type>
-				<Value>7</Value>
+				<Type>GAIN</Type>
+				<Value>6</Value>
+				<Opponent>True</Opponent>
 			</Effect>
 			<Effect>
 				<Type>RETURN</Type>
 				<Value>0</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -103,36 +113,41 @@
 			<Effect>
 				<Type>TRASH</Type>
 				<Value>-1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
 	<Card>
-		<Name>Lightning Bolt</Name>
+		<Name>Zap</Name>
 		<BuyCost>0</BuyCost>
 		<UseCost>1</UseCost>
 		<Effects>
 			<Effect>
-				<Type>GIVE</Type>
-				<Value>9</Value>
+				<Type>GAIN</Type>
+				<Value>8</Value>
+				<Opponent>True</Opponent>
 			</Effect>
 			<Effect>
 				<Type>RETURN</Type>
 				<Value>0</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
 	<Card>
 		<Name>Health Orb</Name>
-		<BuyCost>0</BuyCost>
+		<BuyCost>4</BuyCost>
 		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>
 				<Type>HEALTH</Type>
 				<Value>1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>CARD</Type>
 				<Value>1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -143,11 +158,13 @@
 		<Effects>
 			<Effect>
 				<Type>GAIN</Type>
-				<Value>11</Value>
+				<Value>10</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>RETURN</Type>
 				<Value>0</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
@@ -159,25 +176,75 @@
 			<Effect>
 				<Type>ATTACK</Type>
 				<Value>1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>CARD</Type>
 				<Value>1</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>
 	<Card>
-		<Name>Dash</Name>
-		<BuyCost>5</BuyCost>
+		<Name>Focus</Name>
+		<BuyCost>4</BuyCost>
 		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>
 				<Type>ENERGY</Type>
-				<Value>1</Value>
+				<Value>2</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>CARD</Type>
-				<Value>2</Value>
+				<Value>1</Value>
+				<Opponent>False</Opponent>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Sprint</Name>
+		<BuyCost>4</BuyCost>
+		<UseCost>2</UseCost>
+		<Effects>
+			<Effect>
+				<Type>CARD</Type>
+				<Value>3</Value>
+				<Opponent>False</Opponent>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Tailwind</Name>
+		<BuyCost>6</BuyCost>
+		<UseCost>1</UseCost>
+		<Effects>
+			<Effect>
+				<Type>CARD</Type>
+				<Value>4</Value>
+				<Opponent>False</Opponent>
+			</Effect>
+			<Effect>
+				<Type>CARD</Type>
+				<Value>1</Value>
+				<Opponent>True</Opponent>
+			</Effect>
+		</Effects>
+	</Card>
+	<Card>
+		<Name>Cleanse</Name>
+		<BuyCost>2</BuyCost>
+		<UseCost>2</UseCost>
+		<Effects>
+			<Effect>
+				<Type>DISCARD</Type>
+				<Value>-2</Value>
+				<Opponent>False</Opponent>
+			</Effect>
+			<Effect>
+				<Type>CARD</Type>
+				<Value>3</Value>
+				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
 	</Card>

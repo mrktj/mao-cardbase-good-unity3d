@@ -32,14 +32,12 @@ public class Pile : Group {
   public void ReturnTo(Group g) {
     for (int i = 0; i < group.Count; i++) {
       Card c = CardSet.GetCard(group[i]);
-      foreach (CardEffect ce in c.effects) {
-        if (ce.type == EffectType.RETURN) {
-          Group.MoveDisplaySlot(i, this, g);
-          UpdateSprite();
-          g.UpdateSprite();
-          ReturnTo(g);
-          break;
-        }
+      if (c.HasEffect(EffectType.RETURN)) {
+        Group.MoveDisplaySlot(i, this, g);
+        UpdateSprite();
+        g.UpdateSprite();
+        ReturnTo(g);
+        break;
       }
     }
   }
@@ -53,10 +51,12 @@ public class Pile : Group {
 	protected override void NetworkUpdateSprite () {
     if (group.Count <= 0) {
       top.DrawBlank();
+      top.GetComponent<ImageAnimator>().SetBuyCost(false);
     }
     else { 
       int cardValue = group[group.Count - 1];
       top.DrawCard(cardValue);
+      top.GetComponent<ImageAnimator>().SetBuyCost(true);
     }
 	}
   

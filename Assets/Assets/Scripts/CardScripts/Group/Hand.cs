@@ -12,6 +12,7 @@ public class Hand : Group {
   public List<GameObject> slots { get { return _slots;} } 
   //public GameObject displayCardPrefab; // The DisplaySlot prefab
   public Player player; // the Player this hand belongs to
+  public int count { get {return _slots.Count;}}
   
 	void OnEnable () {
 	  _group = new List<int>();
@@ -112,13 +113,8 @@ public class Hand : Group {
         }
         else { 
           Card c = CardSet.GetCard(group[i]);
-          if (c.useCost == 0) {
-            foreach (CardEffect ce in c.effects) {
-              if (ce.type == EffectType.ENERGY) {
-                slots[i].GetComponent<ImageAnimator>().SetParticles(true);
-                break;
-              }
-            }
+          if (c.useCost == 0 && c.HasEffect(EffectType.ENERGY)) {
+            slots[i].GetComponent<ImageAnimator>().SetParticles(true);
           }
         }
       }
