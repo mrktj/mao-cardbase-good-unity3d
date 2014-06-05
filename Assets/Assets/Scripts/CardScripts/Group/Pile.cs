@@ -22,6 +22,10 @@ public class Pile : Group {
 
   public void Setup() {
     if (Network.isServer) {
+      if (top == null) {
+        top = ImageSet.GetNewBlank(gameObject);
+        networkView.RPC("NetworkSetTop", RPCMode.Others, top.networkView.viewID);
+      }
       Init();
       UpdateSprite();
     }

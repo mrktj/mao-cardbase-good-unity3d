@@ -143,11 +143,11 @@ public class CardEffect {
       output += data.num.ToString();
       output += " ";
       output += type.ToString();
-      if (data.opponent == true) output += " for Opponent";
+      if (data.opponent == true) output += " for Enemy";
       return output;
     }
     else if (generalType == GeneralType.CARDMOD) {
-      if (data.opponent == true) output += "Opponent ";
+      if (data.opponent == true) output += "Enemy ";
       output += type.ToString();
       if (data.cardValue >= 0) output += " " + CardSet.GetCard(data.cardValue).name;
       else if (data.cardValue == -2) output += " hand";

@@ -12,7 +12,7 @@
 		</Effects>
 	</Card>
 	<Card>
-		<Name>Energy</Name>
+		<Name>Strength</Name>
 		<BuyCost>3</BuyCost>
 		<UseCost>0</UseCost>
 		<Effects>
@@ -149,6 +149,11 @@
 				<Value>1</Value>
 				<Opponent>False</Opponent>
 			</Effect>
+			<Effect>
+				<Type>TRASH</Type>
+				<Value>-1</Value>
+				<Opponent>False</Opponent>
+			</Effect>
 		</Effects>
 	</Card>
 	<Card>
@@ -187,7 +192,7 @@
 	</Card>
 	<Card>
 		<Name>Focus</Name>
-		<BuyCost>4</BuyCost>
+		<BuyCost>5</BuyCost>
 		<UseCost>0</UseCost>
 		<Effects>
 			<Effect>

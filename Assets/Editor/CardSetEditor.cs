@@ -1,10 +1,23 @@
 ﻿using UnityEditor;
 using UnityEngine;
+using UnityEditorInternal;
 using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
 using System;
 using System.Linq;
+
+
+/* Workaround to serialize nested lists */
+[Serializable]
+public class ListWrapper {
+  public List<CardEffect> list;
+
+  public ListWrapper(List<CardEffect> newlist) {
+    list = newlist;
+  }
+}
+
 
 /**
  * Editor to edit the CardSet files in a Unity Editor Window
@@ -24,10 +37,9 @@ public class CardSetEditor : EditorWindow {
   List<int> use = new List<int>();            // List of use costs
   [SerializeField]
   Vector2 scroll = new Vector2(0,0);          // Scroll State
-  
   // List of Effects
   [SerializeField]
-  List<List<CardEffect>> effects = new List<List<CardEffect>>(); 
+  List<ListWrapper> effects = new List<ListWrapper>(); 
 
   [MenuItem("Window/CardSetEditor")]
   public static void ShowWindow() {
@@ -52,7 +64,7 @@ public class CardSetEditor : EditorWindow {
         names.Add(c.name);
         buy.Add(c.buyCost);
         use.Add(c.useCost);
-        effects.Add(c.effects);
+        effects.Add(new ListWrapper(c.effects));
       }
     }
   }
@@ -69,7 +81,7 @@ public class CardSetEditor : EditorWindow {
     /* If CardSet has been loaded */
     if (CardSet.initialized) {
       scroll = EditorGUILayout.BeginScrollView(scroll);
-
+       
       // Button GUIStyle
       GUIStyle style = new GUIStyle(GUI.skin.button);
       style.alignment = TextAnchor.MiddleLeft;
@@ -80,7 +92,7 @@ public class CardSetEditor : EditorWindow {
       GUILayout.BeginHorizontal();
       if (GUILayout.Button("+", style)) {
         names.Add("New Card"); buy.Add(0); use.Add(0); folds.Add(false);
-        effectfolds.Add(true); effects.Add(new List<CardEffect>());
+        effectfolds.Add(true); effects.Add(new ListWrapper(new List<CardEffect>()));
       }
       style.padding = new RectOffset(5, 0, 0, 2);
       if (GUILayout.Button("-", style) && names.Count > 0) {
@@ -109,14 +121,14 @@ public class CardSetEditor : EditorWindow {
           // Display buttons for adding and removing effects
           GUILayout.BeginHorizontal();
           effectfolds[i] = EditorGUILayout.Foldout(effectfolds[i], 
-              "Effects (" + effects[i].Count + ")");
+              "Effects (" + effects[i].list.Count + ")");
           style.padding = new RectOffset(3, 0, 0, 2);
           if (GUILayout.Button("+", style)) {
-            effects[i].Add(new CardEffect(new EffectData(0), EffectType.ENERGY));
+            effects[i].list.Add(new CardEffect(new EffectData(0), EffectType.ENERGY));
           }
           style.padding = new RectOffset(5, 0, 0, 2);
-          if (GUILayout.Button("-", style) && effects[i].Count > 0) {
-            effects[i].RemoveAt(effects[i].Count - 1);
+          if (GUILayout.Button("-", style) && effects[i].list.Count > 0) {
+            effects[i].list.RemoveAt(effects[i].list.Count - 1);
           }
           GUILayout.EndHorizontal();
 
@@ -130,27 +142,27 @@ public class CardSetEditor : EditorWindow {
             GUIStyle popstyle = new GUIStyle(EditorStyles.popup);
             popstyle.fixedWidth = 75;
 
-            for (int j = 0; j < effects[i].Count; j++) {
+            for (int j = 0; j < effects[i].list.Count; j++) {
               GUILayout.BeginHorizontal();
               Rect off = new Rect(EditorGUILayout.GetControlRect());
               off.width = 110;
-              effects[i][j].type = (EffectType) 
-                EditorGUI.EnumPopup(off, effects[i][j].type, popstyle);
+              effects[i].list[j].type = (EffectType) 
+                EditorGUI.EnumPopup(off, effects[i].list[j].type, popstyle);
               off.x += 80;
-              if (effects[i][j].generalType != GeneralType.SPECIAL) {
+              if (effects[i].list[j].generalType != GeneralType.SPECIAL) {
                 off.width = 40;
-                effects[i][j].data.opponent = 
-                  EditorGUI.Toggle(off, effects[i][j].data.opponent);
+                effects[i].list[j].data.opponent = 
+                  EditorGUI.Toggle(off, effects[i].list[j].data.opponent);
                 off.x += 20;
                 off.width = 110;
               }
-              if (effects[i][j].generalType == GeneralType.BASIC) {
-                effects[i][j].data.num = 
-                  EditorGUI.IntField(off, effects[i][j].data.num, numstyle);
+              if (effects[i].list[j].generalType == GeneralType.BASIC) {
+                effects[i].list[j].data.num = 
+                  EditorGUI.IntField(off, effects[i].list[j].data.num, numstyle);
               }
-              else if (effects[i][j].generalType == GeneralType.CARDMOD) {
-                effects[i][j].data.cardValue = 
-                  EditorGUI.IntPopup(off, effects[i][j].data.num, 
+              else if (effects[i].list[j].generalType == GeneralType.CARDMOD) {
+                effects[i].list[j].data.cardValue = 
+                  EditorGUI.IntPopup(off, effects[i].list[j].data.num, 
                       CardSet.choiceNames, 
                       Enumerable.Range(-2, CardSet.cards.Count + 1).ToArray());
               }
@@ -161,6 +173,7 @@ public class CardSetEditor : EditorWindow {
           EditorGUI.indentLevel--;
         }
       }
+      
       EditorGUILayout.EndScrollView();
     }
 
@@ -184,11 +197,11 @@ public class CardSetEditor : EditorWindow {
         writer.WriteElementString("BuyCost", buy[i].ToString());
         writer.WriteElementString("UseCost", use[i].ToString());
         writer.WriteStartElement("Effects");
-        for (int j = 0; j < effects[i].Count; j++) {
+        for (int j = 0; j < effects[i].list.Count; j++) {
           writer.WriteStartElement("Effect");
-          writer.WriteElementString("Type", effects[i][j].type.ToString());
-          writer.WriteElementString("Value", effects[i][j].data.num.ToString());
-          writer.WriteElementString("Opponent", effects[i][j].data.opponent.ToString());
+          writer.WriteElementString("Type", effects[i].list[j].type.ToString());
+          writer.WriteElementString("Value", effects[i].list[j].data.num.ToString());
+          writer.WriteElementString("Opponent", effects[i].list[j].data.opponent.ToString());
           writer.WriteEndElement();
         }
         writer.WriteEndElement();

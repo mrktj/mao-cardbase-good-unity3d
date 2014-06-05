@@ -48,17 +48,21 @@ public class CardManager : MonoBehaviour {
 
       // Nothing is being hovered over, revert previous Card to normal size
       if (hovering != null && (hovered == null || hovered != hovering)) { 
-        bool inHand = hovering.gameObject.layer == LayerMask.NameToLayer("Players");
-        hovering.GetComponent<ImageAnimator>().MakeSmall(inHand);
+        hovering.GetComponent<ImageAnimator>().RaiseText();
+        hovering.GetComponent<ImageAnimator>().MakeSmall();
         hovering = null;
       }
       // If a Card is being hovered over, make it temporarily larger
       if (hovered != hovering && hovered.gameObject.tag == "CardFrame"
-          && Time.time - lastHover > 0.2) {
+          && Time.time - lastHover > 0.3f) {
         lastHover = Time.time;
         hovering = hovered;
-        bool inHand = hovering.gameObject.layer == LayerMask.NameToLayer("Players");
-        hovering.GetComponent<ImageAnimator>().MakeBig(inHand);
+        hovering.GetComponent<ImageAnimator>().MakeBig();
+      }
+      if (hovered != null && hovered == hovering && hovered.gameObject.tag == "CardFrame"
+          && Time.time - lastHover > 0.4f) {
+        lastHover = Time.time;
+        hovering.GetComponent<ImageAnimator>().DropText();
       }
     }
 
@@ -223,6 +227,7 @@ public class CardManager : MonoBehaviour {
     Pile[] extras = NetworkView.Find(extraID).GetComponentsInChildren<Pile>();
     piles = new List<Pile>(defaults);
     piles.Add(trash);
+    trash.Setup();
 
     int i = 0;
     for (int j = 0; j < extraCards.Count; j++) {

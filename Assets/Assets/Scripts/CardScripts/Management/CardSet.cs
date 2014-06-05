@@ -21,6 +21,7 @@ public static class CardSet {
   private static string[] _choiceNames;
   public static string[] choiceNames { get { return _choiceNames; }}
   
+  [SerializeField]
   private static bool _initialized = false; // Whether the set has been loaded
   public static bool initialized { get { return _initialized; }}
 

@@ -28,7 +28,6 @@ public abstract class Group : MonoBehaviour {
   [HideInInspector]
   [SerializeField]
   public int numDefault;  // The number of default Cards to start with
-  public GameObject displayCardPrefab;
   public bool isEmpty   {get { return (group.Count <= 0);}}
   public int numCards  {get { return group.Count;}}
 

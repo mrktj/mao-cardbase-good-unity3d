@@ -6,18 +6,24 @@ public class ImageAnimator : MonoBehaviour {
   public GameObject particles;
   public GameObject buyCost;
   public TextMesh[] texts;
+  public TextOutline[] outlines;
+  public float[] initials;
   public float fontScaling = 2f;
+  public float outlineScaling = 1.5f;
 
   public int _cardValue;
   public int cardValue { get { return _cardValue;} }
+  public bool changingFont = false;
 
   public static float moveTime = 0.3f;
+  public static float animTime = 0.5f;
   
   void OnEnable() {
-    foreach (TextMesh t in texts) {
-      t.characterSize = t.characterSize * fontScaling;
-      t.fontSize = (int) (t.fontSize / fontScaling);
+    initials = new float[outlines.Length];
+    for (int i = 0; i < outlines.Length; i++) {
+      initials[i] = outlines[i].pixelSize;
     }
+    StartCoroutine(ShrinkFont(2 * moveTime));
   }
 
 
@@ -44,22 +50,60 @@ public class ImageAnimator : MonoBehaviour {
     StartCoroutine(SmoothMove(pos, moveTime));
   }
 
-  public void MakeBig(bool inHand) {
-    animator.SetBool("Big", true);
-    animator.SetBool("Hand", true);
-    foreach (TextMesh t in texts) {
-      t.characterSize = t.characterSize / fontScaling;
-      t.fontSize = (int) (t.fontSize * fontScaling);
+  public IEnumerator GrowFont(float time) {
+    foreach (TextMesh m in texts) {
+      m.characterSize = m.characterSize / fontScaling;
+      m.fontSize = (int) (m.fontSize * fontScaling);
+    }
+    float t0 = Time.time;
+    float t = Time.time - t0;
+    if (changingFont == true) yield return null;
+    changingFont = true;
+    while (t < time) {
+      t = Time.time - t0;
+      for (int i = 0; i < outlines.Length; i++) {
+        outlines[i].pixelSize = Mathf.Lerp(initials[i]/outlineScaling, initials[i], t/time);
+      }
+      yield return null;
+    }
+    changingFont = false;
+  }
+
+  public IEnumerator ShrinkFont(float time) {
+    float t0 = Time.time;
+    float t = Time.time - t0;
+    if (changingFont == true) yield return null;
+    changingFont = true;
+    while (t < time) {
+      t = Time.time - t0;
+      for (int i = 0; i < outlines.Length; i++) {
+        outlines[i].pixelSize = Mathf.Lerp(initials[i], initials[i]/outlineScaling, t/time);
+      }
+      yield return null;
+    }
+    changingFont = false;
+    foreach (TextMesh m in texts) {
+      m.characterSize = m.characterSize * fontScaling;
+      m.fontSize = (int) (m.fontSize / fontScaling);
     }
   }
 
-  public void MakeSmall(bool inHand) {
+  public void MakeBig() {
+    animator.SetBool("Big", true);
+    StartCoroutine(GrowFont(animTime));
+  }
+
+  public void MakeSmall() {
     animator.SetBool("Big", false);
-    animator.SetBool("Hand", true);
-    foreach (TextMesh t in texts) {
-      t.characterSize = t.characterSize * fontScaling;
-      t.fontSize = (int) (t.fontSize / fontScaling);
-    }
+    StartCoroutine(ShrinkFont(animTime));
+  }
+
+  public void DropText() {
+    if (animator.GetBool("Big")) animator.SetBool("Drop", true);
+  }
+
+  public void RaiseText() {
+    if (animator.GetBool("Big")) animator.SetBool("Drop", false);
   }
 
   public void DrawBlank() {
