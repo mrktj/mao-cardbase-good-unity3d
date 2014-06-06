@@ -31,6 +31,10 @@ public class Card {
   public List<CardEffect> effects { get { return _effects;}}
   public int cardValue  { get { return _cardValue; }}
 
+  public Action<Player, Player, GameObject> OnPlay;
+  public Action<Player, Player, GameObject> OnDiscard;
+  public Action<Player, Player, GameObject> OnBuy;
+
   /* The effects of the Card in text. */
   public string fullText {
     get {
@@ -59,6 +63,18 @@ public class Card {
     _useCost = use;
     _cardValue = val;
     _effects = new List<CardEffect>(eff);
+    OnDiscard += EmptyFunction;
+    OnPlay += EmptyFunction;
+    OnBuy += EmptyFunction;
+    foreach (CardEffect ce in effects) {
+      if (ce.trigger == EffectTrigger.PLAY) OnPlay += ce.Effect;
+      else if (ce.trigger == EffectTrigger.DISCARD) OnDiscard += ce.Effect;
+      else if (ce.trigger == EffectTrigger.BUY) OnBuy += ce.Effect;
+    }
+  }
+  
+  public void EmptyFunction(Player p1, Player p2, GameObject obj) {
+    return;
   }
 
   public Card(Card card) {
@@ -75,24 +91,11 @@ public class Card {
 #endregion
 #region Public Methods
 
-  /* Apply the Effects of the Card to PLAYER */
-  public void OnPlayEffects(Player player, Player opponent) {
-    foreach (CardEffect ce in effects) {
-      ce.OnPlay(player, opponent);
-    }
-  }
-
   public bool HasEffect(EffectType type) {
     foreach (CardEffect ce in effects) {
       if (ce.type == type) return true;
     }
     return false;
-  }
-
-  public void OnDiscardEffects(Player player, Player opponent) {
-    foreach (CardEffect ce in effects) {
-      ce.OnDiscard(player, opponent);
-    }
   }
 
 #endregion

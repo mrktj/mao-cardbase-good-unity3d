@@ -20,39 +20,27 @@ public enum EffectType {
   GAIN,     // 4
   TRASH,
   DISCARD,
-  RETURN    // 7
+  PASSIVE,  // 7
+  RETURN    // 8
 }
 
 public enum GeneralType {
   BASIC = 0,
   CARDMOD = 4,
-  SPECIAL = 7
+  PASSIVE = 7,
+  SPECIAL = 8
 }
 
+public enum EffectTrigger {
+  PLAY,
+  DISCARD,
+  BUY
+}
 
 [StructLayout(LayoutKind.Explicit)]
 public struct EffectData {
   [FieldOffset(0)]
-  public bool opponent;
-  // BasicType Data
-  [FieldOffset(1)]
-  public int num;
-
-  // CardType Data
-  [FieldOffset(1)]
-  public int cardValue;
-
-  public EffectData(int i, bool b = false) {
-    this.opponent = b;
-    this.num = i;
-    this.cardValue = this.num;
-  }
-
-  public EffectData(Card c, bool b = false) {
-    this.opponent = b;
-    this.cardValue = c.cardValue;
-    this.num = this.cardValue;
-  }
+  public EffectTrigger trigger;
 }
 
 /**
@@ -64,8 +52,10 @@ public class CardEffect {
 
 #region Public Variables
 
-  public EffectData data;
-  public EffectType type; // The type of the effect
+  public EffectType type;       // The type of the effect
+  public EffectTrigger trigger; // When the effect triggers
+  public bool opponentEffect;   // Whether the effect applies to the opponent
+  public int num;
   public GeneralType generalType {
     get {
       GeneralType output = GeneralType.BASIC;
@@ -76,61 +66,65 @@ public class CardEffect {
       return output;
     }
   }
+  public Action<Player, GameObject> EffectAction;
 
 #endregion
 #region Constructors
+  
+  public CardEffect(EffectType newType, int newNum) : 
+    this(newType, EffectTrigger.PLAY, false, newNum) {
+  }
+  
+  public CardEffect(EffectType newType, bool opponent, int newNum) : 
+    this(newType, EffectTrigger.PLAY, opponent, newNum) {
+  }
 
-  public CardEffect(EffectData newData, EffectType newType) {
-    data = newData;
+  public CardEffect(EffectType newType, EffectTrigger newtrigger, bool opponent, int newNum) {
+    trigger = newtrigger;
+    opponentEffect = opponent;
+    num = newNum;
     type = newType;
+    
+    SetActions();
   }
 
 #endregion
 #region Public Methods
   
-  /**
-   * Apply the CardEffectType to PLAYER based on the type and dataue
-   */
-  public void OnPlay(Player player, Player opponent) {
-    Player target = player;
-    if (data.opponent == true) target = opponent;
+  private void SetActions() {
     switch (type) {
       case EffectType.ENERGY:
-        target.GainEnergy(data.num);
-        break;
+        EffectAction = (p1, obj) => p1.GainEnergy(num); break;
       case EffectType.ATTACK:
-        target.Attack(data.num);
-        break;
+        EffectAction = (p1, obj) => p1.Attack(num); break;
       case EffectType.HEALTH:
-        if (data.num > 0) target.Heal(data.num);
-        else if (data.num < 0) target.TakeDamage(-1 * data.num);
+        if (num > 0) EffectAction = (p1, obj) => p1.Heal(num);
+        else if (num < 0) EffectAction = (p1, obj) => p1.TakeDamage(-1 * num);
         break;
       case EffectType.CARD:
-        target.Draw(data.num);
-        break;
-
+        EffectAction = (p1, obj) => p1.Draw(num); break;
       case EffectType.GAIN:
-        target.GetNew(data.cardValue);
-        break;
+        EffectAction = (p1, obj) => p1.GetNew(num); break;
       case EffectType.TRASH:
-        if (data.cardValue == -1) target.TrashCard(-1);
-        else {
-        }
+        EffectAction = (p1, obj) => p1.TrashCard(obj);
         break;
       case EffectType.DISCARD:
-        if (data.cardValue == -2) target.Discard(target._hand.count);
+        if (num == -2) EffectAction = (p1, obj) => p1.Clear(p1._hand);
         break;
-
+      case EffectType.RETURN:
+        EffectAction = (p1, obj) => p1.ReturnCards(); break;
       default:
         break;
     }
   }
 
-  public void OnDiscard(Player player, Player opponent) {
-    switch (type) {
-      default:
-        break;
-    }
+  /**
+   * Apply the CardEffectType to PLAYER based on the type and dataue
+   */
+  public void Effect(Player player, Player opponent, GameObject display) {
+    Player target = player;
+    if (opponentEffect == true) target = opponent;
+    if (EffectAction != null) EffectAction(target, display);
   }
 
 #endregion
@@ -138,23 +132,33 @@ public class CardEffect {
 
   public override string ToString() {  
     string output = "";
+    switch (trigger) {
+      case (EffectTrigger.PLAY):
+        break;
+      case (EffectTrigger.DISCARD):
+        output += "Discard: ";
+        break;
+      case (EffectTrigger.BUY):
+        output += "Buy: ";
+        break;
+      default:
+        break;
+    }
+    if (opponentEffect == true) output += "Enemy: ";
     if (generalType == GeneralType.BASIC) {
-      if (data.num > 0) output += "+";
-      output += data.num.ToString();
+      if (num > 0) output += "+";
+      output += num.ToString();
       output += " ";
       output += type.ToString();
-      if (data.opponent == true) output += " for Enemy";
-      return output;
     }
     else if (generalType == GeneralType.CARDMOD) {
-      if (data.opponent == true) output += "Enemy ";
       output += type.ToString();
-      if (data.cardValue >= 0) output += " " + CardSet.GetCard(data.cardValue).name;
-      else if (data.cardValue == -2) output += " hand";
-      else if (data.cardValue == -1) output += " this";
+      if (num >= 0) output += " " + CardSet.GetCard(num).name;
+      else if (num == -2) output += " hand";
+      else if (num == -1) output += " this";
     }
     else if (generalType == GeneralType.SPECIAL) {
-      if (type == EffectType.RETURN) output += "RETURN to hand every turn";
+      if (type == EffectType.RETURN) output += "RETURN to hand";
     }
     return output;
   }

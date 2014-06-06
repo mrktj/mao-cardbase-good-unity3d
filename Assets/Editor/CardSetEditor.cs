@@ -124,7 +124,7 @@ public class CardSetEditor : EditorWindow {
               "Effects (" + effects[i].list.Count + ")");
           style.padding = new RectOffset(3, 0, 0, 2);
           if (GUILayout.Button("+", style)) {
-            effects[i].list.Add(new CardEffect(new EffectData(0), EffectType.ENERGY));
+            effects[i].list.Add(new CardEffect(EffectType.ENERGY, 0));
           }
           style.padding = new RectOffset(5, 0, 0, 2);
           if (GUILayout.Button("-", style) && effects[i].list.Count > 0) {
@@ -151,20 +151,29 @@ public class CardSetEditor : EditorWindow {
               off.x += 80;
               if (effects[i].list[j].generalType != GeneralType.SPECIAL) {
                 off.width = 40;
-                effects[i].list[j].data.opponent = 
-                  EditorGUI.Toggle(off, effects[i].list[j].data.opponent);
+                effects[i].list[j].opponentEffect = 
+                  EditorGUI.Toggle(off, effects[i].list[j].opponentEffect);
                 off.x += 20;
                 off.width = 110;
               }
               if (effects[i].list[j].generalType == GeneralType.BASIC) {
-                effects[i].list[j].data.num = 
-                  EditorGUI.IntField(off, effects[i].list[j].data.num, numstyle);
+                off.width = 50;
+                effects[i].list[j].num = 
+                  EditorGUI.IntField(off, effects[i].list[j].num, numstyle);
+                off.x += 30;
+                off.width = 110;
+                effects[i].list[j].trigger = (EffectTrigger)
+                  EditorGUI.EnumPopup(off, effects[i].list[j].trigger, popstyle);
+                off.x += 80;
               }
               else if (effects[i].list[j].generalType == GeneralType.CARDMOD) {
-                effects[i].list[j].data.cardValue = 
-                  EditorGUI.IntPopup(off, effects[i].list[j].data.num, 
+                effects[i].list[j].num = 
+                  EditorGUI.IntPopup(off, effects[i].list[j].num, 
                       CardSet.choiceNames, 
                       Enumerable.Range(-2, CardSet.cards.Count + 1).ToArray());
+              }
+              if (effects[i].list[j].generalType != GeneralType.BASIC) {
+                effects[i].list[j].trigger = EffectTrigger.PLAY;
               }
               GUILayout.EndHorizontal();
             }
@@ -200,8 +209,9 @@ public class CardSetEditor : EditorWindow {
         for (int j = 0; j < effects[i].list.Count; j++) {
           writer.WriteStartElement("Effect");
           writer.WriteElementString("Type", effects[i].list[j].type.ToString());
-          writer.WriteElementString("Value", effects[i].list[j].data.num.ToString());
-          writer.WriteElementString("Opponent", effects[i].list[j].data.opponent.ToString());
+          writer.WriteElementString("Data", effects[i].list[j].num.ToString());
+          writer.WriteElementString("Trigger", effects[i].list[j].trigger.ToString());
+          writer.WriteElementString("Opponent", effects[i].list[j].opponentEffect.ToString());
           writer.WriteEndElement();
         }
         writer.WriteEndElement();

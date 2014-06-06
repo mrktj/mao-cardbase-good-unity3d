@@ -6,7 +6,8 @@
 		<Effects>
 			<Effect>
 				<Type>ENERGY</Type>
-				<Value>1</Value>
+				<Data>1</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -18,7 +19,8 @@
 		<Effects>
 			<Effect>
 				<Type>ENERGY</Type>
-				<Value>2</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -30,7 +32,8 @@
 		<Effects>
 			<Effect>
 				<Type>ENERGY</Type>
-				<Value>3</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -42,7 +45,8 @@
 		<Effects>
 			<Effect>
 				<Type>ATTACK</Type>
-				<Value>1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -54,7 +58,8 @@
 		<Effects>
 			<Effect>
 				<Type>ATTACK</Type>
-				<Value>2</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -66,7 +71,8 @@
 		<Effects>
 			<Effect>
 				<Type>ATTACK</Type>
-				<Value>3</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -78,12 +84,14 @@
 		<Effects>
 			<Effect>
 				<Type>HEALTH</Type>
-				<Value>-1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>TRASH</Type>
-				<Value>-1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -95,12 +103,14 @@
 		<Effects>
 			<Effect>
 				<Type>GAIN</Type>
-				<Value>6</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>True</Opponent>
 			</Effect>
 			<Effect>
 				<Type>RETURN</Type>
-				<Value>0</Value>
+				<Data>0</Data>
+				<Trigger>DISCARD</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -112,7 +122,8 @@
 		<Effects>
 			<Effect>
 				<Type>TRASH</Type>
-				<Value>-1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -124,12 +135,14 @@
 		<Effects>
 			<Effect>
 				<Type>GAIN</Type>
-				<Value>8</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>True</Opponent>
 			</Effect>
 			<Effect>
 				<Type>RETURN</Type>
-				<Value>0</Value>
+				<Data>0</Data>
+				<Trigger>DISCARD</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -141,17 +154,20 @@
 		<Effects>
 			<Effect>
 				<Type>HEALTH</Type>
-				<Value>1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>CARD</Type>
-				<Value>1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>TRASH</Type>
-				<Value>-1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -163,12 +179,14 @@
 		<Effects>
 			<Effect>
 				<Type>GAIN</Type>
-				<Value>10</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>RETURN</Type>
-				<Value>0</Value>
+				<Data>0</Data>
+				<Trigger>DISCARD</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -180,12 +198,14 @@
 		<Effects>
 			<Effect>
 				<Type>ATTACK</Type>
-				<Value>1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>CARD</Type>
-				<Value>1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -197,12 +217,14 @@
 		<Effects>
 			<Effect>
 				<Type>ENERGY</Type>
-				<Value>2</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>CARD</Type>
-				<Value>1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -214,7 +236,8 @@
 		<Effects>
 			<Effect>
 				<Type>CARD</Type>
-				<Value>3</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>
@@ -226,12 +249,14 @@
 		<Effects>
 			<Effect>
 				<Type>CARD</Type>
-				<Value>4</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>CARD</Type>
-				<Value>1</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>True</Opponent>
 			</Effect>
 		</Effects>
@@ -243,12 +268,14 @@
 		<Effects>
 			<Effect>
 				<Type>DISCARD</Type>
-				<Value>-2</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 			<Effect>
 				<Type>CARD</Type>
-				<Value>3</Value>
+				<Data>0</Data>
+				<Trigger>PLAY</Trigger>
 				<Opponent>False</Opponent>
 			</Effect>
 		</Effects>

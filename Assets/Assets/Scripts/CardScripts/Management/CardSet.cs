@@ -55,9 +55,10 @@ public static class CardSet {
       CardEffect[] effects = new CardEffect[xmlEffects.Count];
       for (int i = 0; i < xmlEffects.Count; i++) {
         EffectType type = ParseEnum<EffectType>(xmlEffects[i].SelectSingleNode("Type").InnerText);
-        EffectData data = new EffectData(Int32.Parse(xmlEffects[i].SelectSingleNode("Value").InnerText), 
-                                         Boolean.Parse(xmlEffects[i].SelectSingleNode("Opponent").InnerText));
-        effects[i] = new CardEffect(data, type);
+        EffectTrigger trigger = ParseEnum<EffectTrigger>(xmlEffects[i].SelectSingleNode("Trigger").InnerText);
+        bool opponent = Boolean.Parse(xmlEffects[i].SelectSingleNode("Opponent").InnerText);
+        int num = Int32.Parse(xmlEffects[i].SelectSingleNode("Data").InnerText);
+        effects[i] = new CardEffect(type, trigger, opponent, num);
       }
       _cards.Add(new Card(name, buyCost, useCost, cards.Count, effects));
     }

@@ -47,6 +47,10 @@ public class Pile : Group {
     }
   }
 
+  public Card Peek() {
+    return CardSet.GetCard(group[group.Count - 1]);
+  }
+
   [RPC]
   private void NetworkSetTop(NetworkViewID id) {
     top = NetworkView.Find(id).observed.gameObject.GetComponent<ImageAnimator>();
@@ -82,8 +86,6 @@ public class Pile : Group {
     obj.layer = this.gameObject.layer;
     obj.GetComponent<ImageAnimator>().Revert();
   }
-
-
 
   public void DealCard(Group g) { 
     Group.MoveDisplaySlot(group.Count - 1, this, g);

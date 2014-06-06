@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Player : MonoBehaviour {
   public int playerClass;
@@ -47,36 +48,26 @@ public class Player : MonoBehaviour {
   }
 
   public IEnumerator NewTurn() {
-    _table.ClearInto(_discard);
-    _hand.ClearInto(_discard);
-    /*
-    int count = _table.slots.Count;
-    for (int i = 0; i < count; i++) {
-      GameObject discarded = _table.slots[0];
-      Card discardedCard = CardSet.GetCard(discarded.GetComponent<ImageAnimator>().cardValue);
-      Group.MoveDisplaySlot(discarded, _table, _discard);
-      discardedCard.OnDiscardEffects(this, opponent);
-    }
-    
-    count = _hand.slots.Count;
-    for (int i = 0; i < count; i++) {
-      GameObject discarded = _hand.slots[0];
-      Card discardedCard = CardSet.GetCard(discarded.GetComponent<ImageAnimator>().cardValue);
-      Group.MoveDisplaySlot(discarded, _hand, _discard);
-      discardedCard.OnDiscardEffects(this, opponent);
-    }
-    */
-    _discard.ReturnTo(_hand);
+    Clear(_table);
+    Clear(_hand);
     yield return new WaitForSeconds(ImageAnimator.moveTime * 2);
     Draw(DefaultHandSize);
   }
 
-  public void TrashCard(int cardValue) {
-    if (cardValue < 0) {
-      int count = _table.slots.Count;
-      GameObject trash = _table.slots[count - 1];
-      _table.PlayCard(trash, manager.trash);
+  public void Clear(Hand h) {
+    int[] temp = h.group.ToArray();
+    h.ClearInto(_discard);
+    foreach (int i in temp) {
+      CardSet.GetCard(i).OnDiscard(this, opponent, null);
     }
+  }
+
+  public void ReturnCards() {
+    _discard.ReturnTo(_hand);
+  }
+
+  public void TrashCard(GameObject obj) {
+    _table.PlayCard(obj, manager.trash);
   }
 
   public void GetNew(int cardValue) {
@@ -86,19 +77,13 @@ public class Player : MonoBehaviour {
     }
     p.DealCard(_discard);
   }
-  
-  public void Discard(int numCards) {
-    if (numCards >= _hand.count) {
-      _hand.ClearInto(_discard);
-    }
-  }
 
   public void TryPlayCard(GameObject dc) {
     Card played = CardSet.GetCard(dc.GetComponent<ImageAnimator>().cardValue);
     if (played.useCost > energy) return;
     UseEnergy(played.useCost);
     _hand.PlayCard(dc, _table);
-    played.OnPlayEffects(this, opponent);
+    played.OnPlay(this, opponent, dc);
   }
 
   public void GainEnergy(int val) {
@@ -157,6 +142,7 @@ public class Player : MonoBehaviour {
       return;
     }
     p.DealCard(_discard);
+    p.Peek().OnBuy(this, opponent, p.top.gameObject);
   }
 
   [RPC]

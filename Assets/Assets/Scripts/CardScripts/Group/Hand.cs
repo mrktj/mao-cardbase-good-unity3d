@@ -12,6 +12,7 @@ public class Hand : Group {
   public List<GameObject> slots { get { return _slots;} } 
   //public GameObject displayCardPrefab; // The DisplaySlot prefab
   public Player player; // the Player this hand belongs to
+  public bool visible;
   public int count { get {return _slots.Count;}}
   
 	void OnEnable () {
@@ -66,14 +67,6 @@ public class Hand : Group {
     MoveDisplaySlot(idx, this, g);
   }
 
-  /**
-   * A hand is open if player is null. 
-   * Anyone can see the contents of an open hand
-   */
-  public bool IsOpen() {
-    if (player == null) return true;
-    return false;
-  }
 
   protected override GameObject SendSlot(int idx) {
     GameObject obj = slots[idx];
@@ -106,16 +99,15 @@ public class Hand : Group {
     for (int i = 0; i < slots.Count; i++) {
       networkView.RPC("NetworkTranslateSlot", RPCMode.All, 
           _slots[i].networkView.viewID, new Vector3(-8 + i*1.5f, 0, 0));
-      if (player == null || Network.player == player.networkPlayer) {
+      if (visible) {
         slots[i].GetComponent<ImageAnimator>().DrawCard(group[i]);
-        if (player == null) {
-          slots[i].GetComponent<ImageAnimator>().SetParticles(false);
-        }
-        else { 
-          Card c = CardSet.GetCard(group[i]);
-          if (c.useCost == 0 && c.HasEffect(EffectType.ENERGY)) {
-            slots[i].GetComponent<ImageAnimator>().SetParticles(true);
-          }
+        slots[i].GetComponent<ImageAnimator>().SetParticles(false);
+      }
+      else if (Network.player == player.networkPlayer) {
+        slots[i].GetComponent<ImageAnimator>().DrawCard(group[i]);
+        Card c = CardSet.GetCard(group[i]);
+        if (c.useCost == 0 && c.HasEffect(EffectType.ENERGY)) {
+          slots[i].GetComponent<ImageAnimator>().SetParticles(true);
         }
       }
       else {
